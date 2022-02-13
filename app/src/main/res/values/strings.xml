@@ -3,4 +3,6 @@
     <string name="enter_username">Enter your username</string>
     <string name="hint_username">Username</string>
     <string name="txt_joint_chat">Join</string>
+    <string name="public_chat_room">Public Chat Room</string>
+    <string name="err_empty_msg">No message to send!</string>
 </resources>
