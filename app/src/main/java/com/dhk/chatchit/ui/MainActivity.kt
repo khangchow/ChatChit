@@ -80,15 +80,15 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     fun setUpViewModel() {
-        chatViewModel.listenPlayerJoin()
+        chatViewModel.listenPlayerState()
 
         chatViewModel.listenChatEvent()
 
         intent.getStringExtra(Constants.KEY_USERNAME)?.let { chatViewModel.joinChatRoom(it) }
 
         binding.apply {
-            chatViewModel.username.observe(this@MainActivity) {
-                tvMessage.text = "$it joined"
+            chatViewModel.userState.observe(this@MainActivity) {
+                tvMessage.text = "${it.username} ${it.state}"
 
                 val animAppear = AlphaAnimation(0f, 1f)
                 animAppear.duration = 1000L
