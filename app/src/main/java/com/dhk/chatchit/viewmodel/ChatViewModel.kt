@@ -18,7 +18,7 @@ class ChatViewModel(private val mSocket: Socket, private val appPrefs: AppPrefs)
     private val _chat = MutableLiveData<Message>()
     val chat: LiveData<Message> get() =  _chat
 
-    private var first = true
+//    private var first = true
     var user: User?= null
 
     fun joinChatRoom(username: String) {
@@ -31,16 +31,22 @@ class ChatViewModel(private val mSocket: Socket, private val appPrefs: AppPrefs)
     }
 
     fun listenPlayerJoin() {
+        mSocket.on("self") {
+            user = Gson().fromJson(it[0].toString(), User::class.java)
+
+            appPrefs.putString(Constants.KEY_USER_DATA, Gson().toJson(user))
+        }
+
         mSocket.on("newUser") {
             val json = JSONObject(it[0].toString())
 
-            if (first) {
-                user = Gson().fromJson(it[0].toString(), User::class.java)
-
-                appPrefs.putString(Constants.KEY_USER_DATA, Gson().toJson(user))
-
-                first = false
-            }
+//            if (first) {
+//                user = Gson().fromJson(it[0].toString(), User::class.java)
+//
+//                appPrefs.putString(Constants.KEY_USER_DATA, Gson().toJson(user))
+//
+//                first = false
+//            }
 
             if (user!!.id != json.getString("id"))
                 _username.postValue(json.getString("username"))
