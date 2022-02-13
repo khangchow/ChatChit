@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="textInputStyle">@style/text_in_layout_hint_Style</item>
+        <item name="hintTextAppearance">@style/text_in_layout_hint_Size</item>
+        <item name="errorTextAppearance">@style/text_in_layout_error_Style</item>
+        <item name="boxStrokeColor">#FFEB3B</item>
+        <item name="boxStrokeWidth">5dp</item>
+        <item name="boxStrokeWidthFocused">5dp</item>
+        <item name="backgroundTint">@android:color/transparent</item>
+    </style>
+
+    <style name="text_in_layout_hint_Size">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="text_in_layout_hint_Style">
+        <item name="hintTextColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
+    </style>
+
+    <style name="text_in_layout_error_Style">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/red</item>
+    </style>
+</resources>
