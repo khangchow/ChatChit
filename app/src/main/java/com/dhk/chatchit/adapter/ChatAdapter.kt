@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.appcompat.content.res.AppCompatResources
@@ -34,43 +35,25 @@ class ChatAdapter(
         binding: ListChatBinding
     ) {
         binding.apply {
-            tvUsername.text = dataItem.username
-
-            tvMessage.text = dataItem.message
-
-            val paramsUsername = tvUsername.layoutParams as RelativeLayout.LayoutParams
-            val paramsMsg = tvMessage.layoutParams as RelativeLayout.LayoutParams
-
-            Log.d(
-                "CHAT",
-                appPrefs.getString(Constants.KEY_USER_DATA).toString() + " " + dataItem.id
-            )
             if (Gson().fromJson(
                     appPrefs.getString(Constants.KEY_USER_DATA),
                     User::class.java
                 ).id == dataItem.id
             ) {
-                paramsUsername.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-                paramsMsg.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                Log.d("CHAT", "ME")
+                viewMe.visibility = View.VISIBLE
+                viewOther.visibility = View.GONE
 
-                tvMessage.background = AppCompatResources.getDrawable(
-                    binding.root.context, R.drawable.chat_message_me
-                )
+                tvUsernameMe.text = dataItem.username
+                tvMessageMe.text = dataItem.message
+            }else {
+                Log.d("CHAT", "OTHER")
+                viewOther.visibility = View.VISIBLE
+                viewMe.visibility = View.GONE
 
-                tvMessage.setTextColor(Color.GREEN)
-            } else {
-                paramsUsername.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
-                paramsMsg.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
-
-                tvMessage.background = AppCompatResources.getDrawable(
-                    binding.root.context, R.drawable.chat_message_others
-                )
-
-                tvMessage.setTextColor(Color.WHITE)
+                tvUsernameOther.text = dataItem.username
+                tvMessageOther.text = dataItem.message
             }
-
-            tvUsername.layoutParams = paramsUsername
-            tvMessage.layoutParams = paramsMsg
         }
     }
 

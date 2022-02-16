@@ -4,21 +4,60 @@
     android:layout_height="wrap_content"
     android:layout_margin="10dp">
 
-    <TextView
-        android:id="@+id/tv_username"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:text="Khang"
-        android:textSize="12dp"
-        android:textStyle="bold" />
+        android:id="@+id/view_other"
+        android:visibility="gone">
 
-    <TextView
-        android:id="@+id/tv_message"
+        <TextView
+            android:id="@+id/tv_username_other"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="Khang"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_message_other"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_username_other"
+            android:background="@drawable/chat_message_others"
+            android:padding="5dp"
+            android:text="a"
+            android:textSize="15dp"
+            android:textColor="@color/white"/>
+    </RelativeLayout>
+
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_username"
-        android:padding="5dp"
-        android:text="a"
-        android:textSize="15dp" />
+        android:id="@+id/view_me"
+        android:layout_alignParentEnd="true"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_username_me"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="Khang"
+            android:textSize="12dp"
+            android:textStyle="bold"
+            android:layout_alignParentEnd="true"/>
+
+        <TextView
+            android:id="@+id/tv_message_me"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_username_me"
+            android:padding="5dp"
+            android:text="a"
+            android:textSize="15dp"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/chat_message_me"
+            android:textColor="@color/green"/>
+    </RelativeLayout>
 </RelativeLayout>

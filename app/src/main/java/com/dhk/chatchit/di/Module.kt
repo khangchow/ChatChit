@@ -27,4 +27,4 @@ fun provideSharePreferences(app: App): SharedPreferences {
     )
 }
 
-fun connectSocket(): Socket = IO.socket("https://589a-171-250-188-147.ngrok.io")
+fun connectSocket(): Socket = IO.socket("https://d164-171-250-188-147.ngrok.io")

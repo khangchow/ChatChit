@@ -137,6 +137,8 @@ class MainActivity : AppCompatActivity() {
                 chatList.add(it)
 
                 (rvChat.adapter as ChatAdapter).setListObject(chatList)
+
+                rvChat.scrollToPosition(chatList.size - 1)
             }
         }
     }

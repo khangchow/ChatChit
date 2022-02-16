@@ -28,7 +28,7 @@ abstract class BaseAdapters<T, B : ViewBinding>(
 
     fun setListObject(listItem: List<T>?) {
         dataList = listItem ?: listOf()
-        notifyItemChanged(itemCount-1)
+        notifyItemInserted(itemCount-1)
     }
     
     fun updateDataList(position: Int, item: T) {
