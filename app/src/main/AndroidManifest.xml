@@ -13,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChatChit">
         <activity
+            android:name=".ui.RoomActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.LoginActivity"
             android:exported="true">
             <intent-filter>
@@ -23,9 +26,7 @@
         </activity>
         <activity
             android:name=".ui.MainActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true"></activity>
     </application>
 
 </manifest>

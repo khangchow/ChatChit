@@ -24,7 +24,7 @@ class LoginActivity : BaseActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
                 else startActivity(
-                    MainActivity.getIntent(
+                    LobbyActivity.getIntent(
                         this@LoginActivity,
                         etUsername.text.toString()
                     )
