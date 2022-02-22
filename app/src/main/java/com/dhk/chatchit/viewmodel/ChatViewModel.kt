@@ -21,16 +21,7 @@ class ChatViewModel(private val mSocket: Socket, private val appPrefs: AppPrefs)
 
     var user: User?= null
 
-    fun joinChatRoom(username: String) {
-        mSocket.connect()
-        mSocket.emit("newUser", username)
-    }
-
-    fun outChatRoom() {
-        mSocket.disconnect()
-    }
-
-    fun listenPlayerState() {
+    fun listenUserState() {
         mSocket.on("self") {
             user = Gson().fromJson(it[0].toString(), User::class.java)
 

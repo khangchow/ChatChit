@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChatChit">
         <activity
-            android:name=".ui.RoomActivity"
+            android:name=".ui.LobbyActivity"
             android:exported="false" />
         <activity
             android:name=".ui.LoginActivity"
@@ -26,7 +26,7 @@
         </activity>
         <activity
             android:name=".ui.MainActivity"
-            android:exported="true"></activity>
+            android:exported="true"/>
     </application>
 
 </manifest>

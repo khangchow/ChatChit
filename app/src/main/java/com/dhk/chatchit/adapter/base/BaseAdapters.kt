@@ -28,6 +28,11 @@ abstract class BaseAdapters<T, B : ViewBinding>(
 
     fun setListObject(listItem: List<T>?) {
         dataList = listItem ?: listOf()
+        notifyDataSetChanged()
+    }
+
+    fun newChatMessage(listItem: List<T>?) {
+        dataList = listItem ?: listOf()
         notifyItemInserted(itemCount-1)
     }
     

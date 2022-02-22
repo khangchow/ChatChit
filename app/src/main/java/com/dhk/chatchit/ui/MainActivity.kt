@@ -80,11 +80,9 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     fun setUpViewModel() {
-        chatViewModel.listenPlayerState()
+        chatViewModel.listenUserState()
 
         chatViewModel.listenChatEvent()
-
-        intent.getStringExtra(Constants.KEY_USERNAME)?.let { chatViewModel.joinChatRoom(it) }
 
         binding.apply {
             chatViewModel.userState.observe(this@MainActivity) {
@@ -144,18 +142,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        fun getIntent(context: Context, username: String): Intent {
+        fun getIntent(context: Context): Intent {
             val intent = Intent(context, MainActivity::class.java)
-
-            intent.putExtra(Constants.KEY_USERNAME, username)
 
             return intent
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        chatViewModel.outChatRoom()
     }
 }
