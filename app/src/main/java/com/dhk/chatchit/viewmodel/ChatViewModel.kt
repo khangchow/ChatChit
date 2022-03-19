@@ -22,12 +22,6 @@ class ChatViewModel(private val mSocket: Socket, private val appPrefs: AppPrefs)
     var user: User?= null
 
     fun listenUserState() {
-        mSocket.on("self") {
-            user = Gson().fromJson(it[0].toString(), User::class.java)
-
-            appPrefs.putString(Constants.KEY_USER_DATA, Gson().toJson(user))
-        }
-
         mSocket.on("userState") {
             _userState.postValue(Gson().fromJson(it[0].toString(), UserState::class.java))
         }

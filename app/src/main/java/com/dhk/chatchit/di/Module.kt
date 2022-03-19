@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.chow.chinesedicev2.local.AppPrefs
 import com.dhk.chatchit.api.Api
 import com.dhk.chatchit.repository.RoomRepo
+import com.dhk.chatchit.utils.Constants
 import com.dhk.chatchit.viewmodel.ChatViewModel
 import com.dhk.chatchit.viewmodel.LobbyViewModel
 import org.koin.android.ext.koin.androidApplication
@@ -29,7 +30,7 @@ val module = module {
     single { RoomRepo(get()) }
 
     viewModel { ChatViewModel(get(), get()) }
-    viewModel { LobbyViewModel(get(), get()) }
+    viewModel { LobbyViewModel(get(), get(), get()) }
 }
 
 fun provideSharePreferences(app: App): SharedPreferences {
@@ -39,11 +40,11 @@ fun provideSharePreferences(app: App): SharedPreferences {
     )
 }
 
-fun connectSocket(): Socket = IO.socket("https://0d75-115-75-223-191.ngrok.io")
+fun connectSocket(): Socket = IO.socket(Constants.BASE_URL)
 
 fun provideRetrofit(): Retrofit {
     return Retrofit.Builder()
-        .baseUrl("https://0d75-115-75-223-191.ngrok.io")
+        .baseUrl(Constants.BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 }

@@ -5,20 +5,37 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chow.chinesedicev2.local.AppPrefs
+import com.chow.chinesedicev2.model.User
 import com.dhk.chatchit.model.RoomStatus
 import com.dhk.chatchit.repository.RoomRepo
 import com.dhk.chatchit.base.BaseResponse
 import com.dhk.chatchit.model.BaseResponseModel
+import com.dhk.chatchit.model.Message
+import com.dhk.chatchit.utils.Constants
+import com.google.gson.Gson
 import io.socket.client.Socket
 import kotlinx.coroutines.launch
 
-class LobbyViewModel(private val mSocket: Socket, private val roomRepo: RoomRepo): ViewModel() {
+class LobbyViewModel(private val mSocket: Socket, private val roomRepo: RoomRepo, private val appPrefs: AppPrefs): ViewModel() {
     private val _rooms = MutableLiveData<BaseResponseModel<List<RoomStatus>>>()
     val rooms: LiveData<BaseResponseModel<List<RoomStatus>>> get() = _rooms
 
+    private val _message = MutableLiveData<BaseResponseModel<String>>()
+    val message: LiveData<BaseResponseModel<String>> get() = _message
+
     fun joinLobby(username: String) {
         mSocket.connect()
+
         mSocket.emit("newUser", username)
+
+        mSocket.on("self") {
+            val user = Gson().fromJson(it[0].toString(), User::class.java)
+
+            appPrefs.putString(Constants.KEY_USER_DATA, Gson().toJson(user))
+
+            _message.postValue(BaseResponseModel("Welcome ${user.username}!", ""))
+        }
     }
 
     fun outLobby() {
@@ -29,6 +46,16 @@ class LobbyViewModel(private val mSocket: Socket, private val roomRepo: RoomRepo
         viewModelScope.launch {
             when(val result = roomRepo.getRooms()) {
                 is BaseResponse.Success -> result.response.let { _rooms.postValue(it) }
+                is BaseResponse.Error -> Log.d("ERROR", result.exception.message.toString())
+                else -> Unit
+            }
+        }
+    }
+
+    fun newRoom(name: String) {
+        viewModelScope.launch {
+            when(val result = roomRepo.newRoom(name)) {
+                is BaseResponse.Success -> result.response.let { _message.postValue(it) }
                 is BaseResponse.Error -> Log.d("ERROR", result.exception.message.toString())
                 else -> Unit
             }

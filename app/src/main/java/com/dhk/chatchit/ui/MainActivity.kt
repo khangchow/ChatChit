@@ -21,6 +21,7 @@ import com.dhk.chatchit.R
 import com.dhk.chatchit.model.Message
 import com.dhk.chatchit.utils.Constants
 import com.dhk.chatchit.databinding.ActivityMainBinding
+import com.dhk.chatchit.utils.showAnimationText
 import com.dhk.chatchit.viewmodel.ChatViewModel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -86,57 +87,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.apply {
             chatViewModel.userState.observe(this@MainActivity) {
-                tvMessage.text = "${it.username} ${it.state}"
-
-                val animAppear = AlphaAnimation(0f, 1f)
-                animAppear.duration = 1000L
-                animAppear.setAnimationListener(object : Animation.AnimationListener {
-                    override fun onAnimationRepeat(animation: Animation?) {
-                    }
-
-                    override fun onAnimationEnd(animation: Animation?) {
-                        val timer = object : CountDownTimer(1000, 200) {
-                            override fun onTick(millisUntilFinished: Long) {}
-
-                            override fun onFinish() {
-                                val animDisappear = AlphaAnimation(1f, 0f)
-                                animDisappear.duration = 1000L
-                                animDisappear.setAnimationListener(object :
-                                    Animation.AnimationListener {
-                                    override fun onAnimationRepeat(animation: Animation?) {
-                                    }
-
-                                    override fun onAnimationEnd(animation: Animation?) {
-                                        tvMessage.visibility = View.GONE
-                                    }
-
-                                    override fun onAnimationStart(animation: Animation?) {
-                                    }
-
-                                })
-
-                                tvMessage.startAnimation(animDisappear)
-                            }
-                        }
-
-                        timer.start()
-                    }
-
-                    override fun onAnimationStart(animation: Animation?) {
-                    }
-
-                })
-
-                tvMessage.visibility = View.VISIBLE
-                tvMessage.startAnimation(animAppear)
-            }
-
-            chatViewModel.chat.observe(this@MainActivity) {
-                chatList.add(it)
-
-                (rvChat.adapter as ChatAdapter).setListObject(chatList)
-
-                rvChat.scrollToPosition(chatList.size - 1)
+                tvMessage.showAnimationText("${it.username} ${it.state}")
             }
         }
     }

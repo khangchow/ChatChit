@@ -17,6 +17,8 @@ import com.dhk.chatchit.R
 import com.dhk.chatchit.databinding.ActivityLobbyBinding
 import com.dhk.chatchit.model.RoomStatus
 import com.dhk.chatchit.utils.Constants
+import com.dhk.chatchit.utils.showAlertDialog
+import com.dhk.chatchit.utils.showAnimationText
 import com.dhk.chatchit.viewmodel.LobbyViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -35,6 +37,30 @@ class LobbyActivity : AppCompatActivity() {
 
         setUpRecView()
         setUpViewModel()
+
+        binding.apply {
+            btnNew.setOnClickListener {
+                showAlertDialog(
+                    alertTitle = getString(R.string.new_room),
+                    positiveLabel = getString(R.string.create),
+                    negativeLabel = getString(R.string.cancel),
+                    positiveClick = {
+                        if (it.isEmpty()) Toast.makeText(
+                            this@LobbyActivity,
+                            getString(R.string.err_empty_name),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        else {
+                            lobbyViewModel.newRoom(it)
+                        }
+                    },
+                    negativeClick = {
+
+                    },
+                    alertMessage = ""
+                )
+            }
+        }
     }
 
     fun setUpRecView() {
@@ -69,16 +95,26 @@ class LobbyActivity : AppCompatActivity() {
     }
 
     fun setUpViewModel() {
-        lobbyViewModel.rooms.observe(this) {
-            binding.apply {
-               if (it.error.isEmpty()) {
-                   Log.d("ROOM", it.toString())
-                   Toast.makeText(this@LobbyActivity, it.toString(), Toast.LENGTH_SHORT).show()
-                   (rvRooms.adapter as RoomAdapter).setListObject(it.data)
+        binding.apply {
+            lobbyViewModel.message.observe(this@LobbyActivity) {
+                if (it.error.isEmpty()) {
+                    tvMessage.showAnimationText(it.data)
 
-                   swipeRefreshLayout.isRefreshing = false
-               }
+                    if (it.data.equals("Created New Room")) lobbyViewModel.getRooms()
+                }
+                else tvMessage.showAnimationText(it.error)
             }
+
+            lobbyViewModel.rooms.observe(this@LobbyActivity) {
+                if (it.error.isEmpty()) {
+                    Log.d("KHANG", "setUpViewModel: "+it.data.toString())
+
+                    (rvRooms.adapter as RoomAdapter).setListObject(it.data)
+
+                    swipeRefreshLayout.isRefreshing = false
+                }
+            }
+
         }
 
         lobbyViewModel.getRooms()

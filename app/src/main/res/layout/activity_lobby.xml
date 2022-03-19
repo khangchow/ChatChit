@@ -68,7 +68,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:tint="@color/green"
-        app:maxImageSize="40dp"/>
+        app:maxImageSize="40dp"
+        android:id="@+id/btn_new"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gl"
@@ -77,4 +78,39 @@
         android:orientation="vertical"
         app:layout_constraintGuide_begin="20dp"
         app:layout_constraintGuide_percent="0.7"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="20dp"
+        app:layout_constraintGuide_percent="0.2"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="20dp"
+        app:layout_constraintGuide_percent="0.1"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="Hello World!"
+        app:layout_constraintBottom_toBottomOf="@id/gl2"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/gl1"
+        android:background="@drawable/custom_message"
+        android:textColor="#4CFF00"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:id="@+id/tv_message"
+        android:visibility="gone"
+        android:layout_margin="10dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

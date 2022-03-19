@@ -5,4 +5,9 @@
     <string name="txt_joint_chat">Join</string>
     <string name="public_chat_room">Public Chat Room</string>
     <string name="err_empty_msg">No message to send!</string>
+    <string name="enter_room_name">Enter room\'s name</string>
+    <string name="create">Create</string>
+    <string name="cancel">Cancel</string>
+    <string name="err_empty_name">Name can not be empty</string>
+    <string name="new_room">NEW ROOM</string>
 </resources>

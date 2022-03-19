@@ -14,4 +14,12 @@ class RoomRepo(private val api: Api) {
             BaseResponse.Error(ResponseError(101, e.message.toString()))
         }
     }
+
+    suspend fun newRoom(name: String): BaseResponse<BaseResponseModel<String>> {
+        return try {
+            BaseResponse.Success(api.newRoom(name))
+        } catch (e: Exception) {
+            BaseResponse.Error(ResponseError(101, e.message.toString()))
+        }
+    }
 }
