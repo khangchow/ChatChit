@@ -35,24 +35,33 @@ class ChatAdapter(
         binding: ListChatBinding
     ) {
         binding.apply {
-            if (Gson().fromJson(
-                    appPrefs.getString(Constants.KEY_USER_DATA),
-                    User::class.java
-                ).id == dataItem.id
-            ) {
-                Log.d("CHAT", "ME")
-                viewMe.visibility = View.VISIBLE
+            if (dataItem.type == Constants.TYPE_NOTIFICATION) {
+                viewMe.visibility = View.GONE
                 viewOther.visibility = View.GONE
 
-                tvUsernameMe.text = dataItem.username
-                tvMessageMe.text = dataItem.message
-            }else {
-                Log.d("CHAT", "OTHER")
-                viewOther.visibility = View.VISIBLE
-                viewMe.visibility = View.GONE
+                tvNotification.visibility = View.VISIBLE
 
-                tvUsernameOther.text = dataItem.username
-                tvMessageOther.text = dataItem.message
+                tvNotification.text = "${dataItem.username} ${dataItem.message}"
+            }else {
+                tvNotification.visibility = View.GONE
+
+                if (Gson().fromJson(
+                        appPrefs.getString(Constants.KEY_USER_DATA),
+                        User::class.java
+                    ).id == dataItem.id
+                ) {
+                    viewMe.visibility = View.VISIBLE
+                    viewOther.visibility = View.GONE
+
+                    tvUsernameMe.text = dataItem.username
+                    tvMessageMe.text = dataItem.message
+                }else {
+                    viewOther.visibility = View.VISIBLE
+                    viewMe.visibility = View.GONE
+
+                    tvUsernameOther.text = dataItem.username
+                    tvMessageOther.text = dataItem.message
+                }
             }
         }
     }

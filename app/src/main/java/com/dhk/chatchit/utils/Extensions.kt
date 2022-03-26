@@ -4,6 +4,7 @@ import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.CountDownTimer
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AlphaAnimation
@@ -49,7 +50,7 @@ fun Activity.showAlertDialog(
     } else {
         baseAlertDialog.positiveButton.text = positiveLabel
         baseAlertDialog.positiveButton.setOnClickListener {
-            alertDialog.dismiss()
+            if (!TextUtils.isEmpty(baseAlertDialog.et.text)) alertDialog.dismiss()
             positiveClick(if (showEditText) baseAlertDialog.et.text.toString() else "")
         }
     }

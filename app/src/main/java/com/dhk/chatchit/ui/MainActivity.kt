@@ -37,6 +37,10 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
 
+        val room = intent.getStringExtra(Constants.KEY_ROOM)
+
+        chatViewModel.joinRoom(room!!)
+
         setContentView(binding.root)
 
         setUpViewModel()
@@ -44,6 +48,8 @@ class MainActivity : AppCompatActivity() {
         setUpChatRecycleView()
 
         binding.apply {
+            tvRoomName.text = room
+
             btnBack.setOnClickListener {
                 finish()
             }
@@ -86,17 +92,30 @@ class MainActivity : AppCompatActivity() {
         chatViewModel.listenChatEvent()
 
         binding.apply {
-            chatViewModel.userState.observe(this@MainActivity) {
-                tvMessage.showAnimationText("${it.username} ${it.state}")
+            chatViewModel.chat.observe(this@MainActivity) {
+                Log.d("KHANG", "setUpViewModel: $it")
+                chatList.add(it)
+
+                (rvChat.adapter as ChatAdapter).setListObject(chatList)
+
+                rvChat.scrollToPosition(chatList.size - 1)
             }
         }
     }
 
     companion object {
-        fun getIntent(context: Context): Intent {
+        fun getIntent(context: Context, room: String): Intent {
             val intent = Intent(context, MainActivity::class.java)
+
+            intent.putExtra(Constants.KEY_ROOM, room)
 
             return intent
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        chatViewModel.leaveRoom()
     }
 }

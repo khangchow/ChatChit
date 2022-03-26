@@ -3,6 +3,8 @@ import java.io.Serializable
 
 data class Message(
     val id: String,
-    val username: String,
-    val message: String
+    val type: Int,
+    val username: String? = null,
+    val message: String,
+    val room: String
 ): Serializable

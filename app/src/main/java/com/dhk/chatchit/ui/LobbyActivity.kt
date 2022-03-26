@@ -79,11 +79,7 @@ class LobbyActivity : AppCompatActivity() {
                     ) {
                         when (idViewClick) {
                             R.id.parent -> {
-                                Toast.makeText(
-                                    this@LobbyActivity,
-                                    "Clicked ${dataClicked?.name}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                startActivity(MainActivity.getIntent(this@LobbyActivity, dataClicked!!.name))
                             }
                         }
                     }
@@ -98,11 +94,19 @@ class LobbyActivity : AppCompatActivity() {
         binding.apply {
             lobbyViewModel.message.observe(this@LobbyActivity) {
                 if (it.error.isEmpty()) {
-                    tvMessage.showAnimationText(it.data)
+                    if (it.data.equals("Created New Room")) {
+                        Toast.makeText(this@LobbyActivity, it.data, Toast.LENGTH_SHORT).show()
 
-                    if (it.data.equals("Created New Room")) lobbyViewModel.getRooms()
+                        lobbyViewModel.getRooms()
+
+                        startActivity(MainActivity.getIntent(this@LobbyActivity, lobbyViewModel.room))
+                    }else {
+                        rlLoading.visibility = View.INVISIBLE
+
+                        tvMessage.showAnimationText(it.data)
+                    }
                 }
-                else tvMessage.showAnimationText(it.error)
+                else Toast.makeText(this@LobbyActivity, it.error, Toast.LENGTH_SHORT).show()
             }
 
             lobbyViewModel.rooms.observe(this@LobbyActivity) {

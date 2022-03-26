@@ -23,12 +23,14 @@ class LoginActivity : BaseActivity() {
                     "Please enter username!",
                     Toast.LENGTH_SHORT
                 ).show()
-                else startActivity(
-                    LobbyActivity.getIntent(
-                        this@LoginActivity,
-                        etUsername.text.toString()
+                else {
+                    startActivity(
+                        LobbyActivity.getIntent(
+                            this@LoginActivity,
+                            etUsername.text.toString()
+                        )
                     )
-                )
+                }
             }
         }
     }
