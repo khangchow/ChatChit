@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp">
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/view_other"
-        android:visibility="gone">
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/gl">
 
         <TextView
             android:id="@+id/tv_username_other"
@@ -16,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:text="Khang"
-            android:textSize="12dp"
+            android:textSize="15dp"
             android:textStyle="bold" />
 
         <TextView
@@ -25,49 +30,64 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_username_other"
             android:background="@drawable/chat_message_others"
-            android:padding="5dp"
+            android:padding="10dp"
             android:text="a"
-            android:textSize="15dp"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white"
+            android:textSize="15dp" />
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/view_me"
-        android:layout_alignParentEnd="true"
-        android:visibility="gone">
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="@id/gl">
 
         <TextView
             android:id="@+id/tv_username_me"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
             android:layout_marginStart="5dp"
             android:text="Khang"
-            android:textSize="12dp"
-            android:textStyle="bold"
-            android:layout_alignParentEnd="true"/>
+            android:textSize="15dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_message_me"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_username_me"
-            android:padding="5dp"
-            android:text="a"
-            android:textSize="15dp"
             android:layout_alignParentEnd="true"
             android:background="@drawable/chat_message_me"
-            android:textColor="@color/green"/>
+            android:padding="10dp"
+            android:text="a"
+            android:textColor="@color/green"
+            android:textSize="15dp" />
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/tv_notification"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/tv_notification"
-        android:textColor="@color/black"
-        android:textSize="15dp"
         android:gravity="center"
         android:text="Khang joined"
-        android:visibility="gone"/>
-</RelativeLayout>
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp"
+        app:layout_constraintGuide_percent="0.5"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

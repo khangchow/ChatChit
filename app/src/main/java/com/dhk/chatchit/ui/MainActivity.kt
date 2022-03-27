@@ -13,20 +13,22 @@ import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.chow.chinesedicev2.adapter.ChatAdapter
 import com.chow.chinesedicev2.local.AppPrefs
 import com.chow.chinesedicev2.model.User
 import com.chow.chinesedicev2.utils.KeyboardUtils
 import com.dhk.chatchit.R
-import com.dhk.chatchit.model.Message
-import com.dhk.chatchit.utils.Constants
 import com.dhk.chatchit.databinding.ActivityMainBinding
+import com.dhk.chatchit.model.Message
+import com.dhk.chatchit.ui.base.BaseActivity
+import com.dhk.chatchit.utils.Constants
 import com.dhk.chatchit.utils.showAnimationText
 import com.dhk.chatchit.viewmodel.ChatViewModel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding
     private val chatViewModel: ChatViewModel by viewModel()
     private val appPrefs: AppPrefs by inject()
@@ -71,6 +73,12 @@ class MainActivity : AppCompatActivity() {
                     etMessage.text = null
                 }
             }
+
+            tvScrollBot.setOnClickListener {
+                rvChat.smoothScrollToPosition(chatList.size - 1)
+
+                tvScrollBot.visibility = View.INVISIBLE
+            }
         }
     }
 
@@ -82,6 +90,15 @@ class MainActivity : AppCompatActivity() {
             )
 
             rvChat.layoutManager = LinearLayoutManager(this@MainActivity)
+
+            rvChat.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (!recyclerView.canScrollVertically(1) && recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
+                        if (tvScrollBot.visibility == View.VISIBLE) tvScrollBot.visibility = View.INVISIBLE
+                    }
+                }
+            })
         }
     }
 
@@ -93,12 +110,13 @@ class MainActivity : AppCompatActivity() {
 
         binding.apply {
             chatViewModel.chat.observe(this@MainActivity) {
-                Log.d("KHANG", "setUpViewModel: $it")
-                chatList.add(it)
+                if (!rvChat.canScrollVertically(1)) {
+                    chatList.add(it)
 
-                (rvChat.adapter as ChatAdapter).setListObject(chatList)
+                    (rvChat.adapter as ChatAdapter).setListObject(chatList)
 
-                rvChat.scrollToPosition(chatList.size - 1)
+                    rvChat.smoothScrollToPosition(chatList.size - 1)
+                } else tvScrollBot.visibility = View.VISIBLE
             }
         }
     }

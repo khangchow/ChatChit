@@ -52,7 +52,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/bottom_view">
 
-        <EditText
+        <com.chow.chinesedicev2.utils.EditTextV2
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="9"
@@ -76,6 +76,19 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/newest_message"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:padding="10dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@id/bottom_view"
+        android:id="@+id/tv_scroll_bot"
+        android:background="@color/green"
+        android:visibility="invisible"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gl2"
