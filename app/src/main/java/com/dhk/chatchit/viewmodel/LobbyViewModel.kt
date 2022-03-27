@@ -24,6 +24,9 @@ class LobbyViewModel(private val mSocket: Socket, private val roomRepo: RoomRepo
     private val _message = MutableLiveData<BaseResponseModel<String>>()
     val message: LiveData<BaseResponseModel<String>> get() = _message
 
+    private val _check = MutableLiveData<BaseResponseModel<String>>()
+    val check: LiveData<BaseResponseModel<String>> get() = _check
+
     lateinit var room: String
 
     fun joinLobby(username: String) {
@@ -64,6 +67,16 @@ class LobbyViewModel(private val mSocket: Socket, private val roomRepo: RoomRepo
         viewModelScope.launch {
             when(val result = roomRepo.newRoom(name)) {
                 is BaseResponse.Success -> result.response.let { _message.postValue(it) }
+                is BaseResponse.Error -> Log.d("ERROR", result.exception.message.toString())
+                else -> Unit
+            }
+        }
+    }
+
+    fun checkRoom(name: String) {
+        viewModelScope.launch {
+            when(val result = roomRepo.checkRoom(name)) {
+                is BaseResponse.Success -> result.response.let { _check.postValue(it) }
                 is BaseResponse.Error -> Log.d("ERROR", result.exception.message.toString())
                 else -> Unit
             }

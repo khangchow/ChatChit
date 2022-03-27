@@ -50,8 +50,14 @@ fun Activity.showAlertDialog(
     } else {
         baseAlertDialog.positiveButton.text = positiveLabel
         baseAlertDialog.positiveButton.setOnClickListener {
-            if (!TextUtils.isEmpty(baseAlertDialog.et.text)) alertDialog.dismiss()
-            positiveClick(if (showEditText) baseAlertDialog.et.text.toString() else "")
+            if (baseAlertDialog.et.visibility == View.VISIBLE) {
+                if (!TextUtils.isEmpty(baseAlertDialog.et.text)) alertDialog.dismiss()
+                positiveClick(if (showEditText) baseAlertDialog.et.text.toString() else "")
+            }else {
+                positiveClick("")
+
+                alertDialog.dismiss()
+            }
         }
     }
 

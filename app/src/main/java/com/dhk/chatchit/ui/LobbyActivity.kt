@@ -77,7 +77,7 @@ class LobbyActivity : AppCompatActivity() {
                     ) {
                         when (idViewClick) {
                             R.id.parent -> {
-                                startActivity(MainActivity.getIntent(this@LobbyActivity, dataClicked!!.name))
+                                lobbyViewModel.checkRoom(dataClicked!!.name)
                             }
                         }
                     }
@@ -95,8 +95,10 @@ class LobbyActivity : AppCompatActivity() {
                     if (it.data.equals("Created new room") || it.data.equals("You are now in lobby")) {
                         Toast.makeText(this@LobbyActivity, it.data, Toast.LENGTH_SHORT).show()
 
-                        if (it.data.equals("Created new room"))
+                        if (it.data.equals("Created new room")) {
+                            Log.d("KHANG", "setUpViewModel: "+it.data)
                             startActivity(MainActivity.getIntent(this@LobbyActivity, lobbyViewModel.room))
+                        }
                         else lobbyViewModel.getRooms()
                     }else {
                         rlLoading.visibility = View.INVISIBLE
@@ -117,6 +119,25 @@ class LobbyActivity : AppCompatActivity() {
                 }
             }
 
+            lobbyViewModel.check.observe(this@LobbyActivity) {
+                if (it.error.isEmpty()) {
+                    startActivity(MainActivity.getIntent(this@LobbyActivity, it.data))
+                }else {
+                    showAlertDialog(
+                        alertTitle = getString(R.string.warning),
+                        positiveLabel = getString(R.string.refresh),
+                        negativeLabel = "",
+                        positiveClick = {
+                            lobbyViewModel.getRooms()
+                        },
+                        negativeClick = {
+
+                        },
+                        alertMessage = "No room information found!",
+                        showEditText = false
+                    )
+                }
+            }
         }
 
         lobbyViewModel.getRooms()

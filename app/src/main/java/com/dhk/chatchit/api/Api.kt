@@ -14,4 +14,8 @@ interface Api {
     @FormUrlEncoded
     @POST("newroom")
     suspend fun newRoom(@Field("name") name: String): BaseResponseModel<String>
+
+    @FormUrlEncoded
+    @POST("checkroom")
+    suspend fun checkRoom(@Field("name") name: String): BaseResponseModel<String>
 }

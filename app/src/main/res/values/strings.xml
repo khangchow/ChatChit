@@ -11,4 +11,6 @@
     <string name="err_empty_name">Name can not be empty</string>
     <string name="new_room">NEW ROOM</string>
     <string name="newest_message">Newest message</string>
+    <string name="warning">Warning</string>
+    <string name="refresh">Refresh room list</string>
 </resources>
