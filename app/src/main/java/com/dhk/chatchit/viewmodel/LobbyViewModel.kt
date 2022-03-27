@@ -38,6 +38,10 @@ class LobbyViewModel(private val mSocket: Socket, private val roomRepo: RoomRepo
 
             _message.postValue(BaseResponseModel("Welcome ${user.username}!", ""))
         }
+
+        mSocket.on("leftRoom") {
+            _message.postValue(BaseResponseModel(it[0].toString(), ""))
+        }
     }
 
     fun outLobby() {

@@ -50,9 +50,7 @@ class LobbyActivity : AppCompatActivity() {
                             getString(R.string.err_empty_name),
                             Toast.LENGTH_SHORT
                         ).show()
-                        else {
-                            lobbyViewModel.newRoom(it)
-                        }
+                        else lobbyViewModel.newRoom(it)
                     },
                     negativeClick = {
 
@@ -94,12 +92,12 @@ class LobbyActivity : AppCompatActivity() {
         binding.apply {
             lobbyViewModel.message.observe(this@LobbyActivity) {
                 if (it.error.isEmpty()) {
-                    if (it.data.equals("Created New Room")) {
+                    if (it.data.equals("Created new room") || it.data.equals("You are now in lobby")) {
                         Toast.makeText(this@LobbyActivity, it.data, Toast.LENGTH_SHORT).show()
 
-                        lobbyViewModel.getRooms()
-
-                        startActivity(MainActivity.getIntent(this@LobbyActivity, lobbyViewModel.room))
+                        if (it.data.equals("Created new room"))
+                            startActivity(MainActivity.getIntent(this@LobbyActivity, lobbyViewModel.room))
+                        else lobbyViewModel.getRooms()
                     }else {
                         rlLoading.visibility = View.INVISIBLE
 

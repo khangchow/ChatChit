@@ -1,7 +1,7 @@
 package com.dhk.chatchit.utils
 
 object Constants {
-    const val BASE_URL = "https://7847-171-250-188-147.ngrok.io"
+    const val BASE_URL = "https://e592-171-250-188-147.ngrok.io"
 
     const val KEY_USERNAME = "username"
     const val KEY_MESSAGE = "message"
