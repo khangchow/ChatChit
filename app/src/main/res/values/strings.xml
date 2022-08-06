@@ -13,4 +13,11 @@
     <string name="newest_message">Newest message</string>
     <string name="warning">Warning</string>
     <string name="refresh">Refresh room list</string>
+    <string name="common_error">Something\'s wrong! Please try again later!</string>
+    <string name="error_repeated_room_name">Repeated room name!</string>
+    <string name="error_invalid_room">This room doesn\'t exist anymore!</string>
+    <string name="created_room">Successfully created new room!</string>
+    <string name="joined_lobby">Welcome %s!</string>
+    <string name="left_room">You are now in lobby</string>
+    <string name="empty_username_warning">Username can\'t be empty!</string>
 </resources>

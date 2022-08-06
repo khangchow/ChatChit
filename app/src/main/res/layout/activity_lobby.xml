@@ -4,72 +4,72 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.LobbyActivity"
+    android:background="@drawable/gradient_bg"
     android:padding="20dp"
-    android:background="@drawable/gradient_bg">
+    tools:context=".ui.lobby.LobbyActivity">
 
     <TextView
         android:id="@+id/tv_title_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="start"
         android:text="Room's name"
         android:textColor="@color/white"
         android:textSize="17sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/gl"
-        android:gravity="start" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_title_active"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Active"
         android:textColor="@color/white"
         android:textSize="17sp"
-        android:text="Active"
-        app:layout_constraintStart_toStartOf="@+id/gl"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:gravity="center"
-        android:textStyle="bold" />
+        app:layout_constraintStart_toStartOf="@+id/gl"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/line_title"
+        android:layout_marginTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/swipeRefreshLayout"
-        android:layout_marginTop="10dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/line_title">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_rooms"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="10dp"
-            android:id="@+id/rv_rooms"/>
+            android:layout_marginTop="10dp" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <View
         android:id="@+id/line_title"
         android:layout_width="0dp"
         android:layout_height="3dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:background="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_title_name"
-        android:background="@color/white"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title_name" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_new"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/black"
         android:src="@drawable/ic_add"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:tint="@color/green"
+        app:layout_constraintEnd_toEndOf="parent"
         app:maxImageSize="40dp"
-        android:id="@+id/btn_new"/>
+        app:tint="@color/green" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gl"
@@ -77,7 +77,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_begin="20dp"
-        app:layout_constraintGuide_percent="0.7"/>
+        app:layout_constraintGuide_percent="0.7" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gl2"
@@ -85,7 +85,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="20dp"
-        app:layout_constraintGuide_percent="0.2"/>
+        app:layout_constraintGuide_percent="0.2" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gl1"
@@ -93,7 +93,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="20dp"
-        app:layout_constraintGuide_percent="0.1"/>
+        app:layout_constraintGuide_percent="0.1" />
 
     <TextView
         android:id="@+id/tv_message"
@@ -115,13 +115,13 @@
         app:layout_constraintTop_toTopOf="@+id/gl1" />
 
     <RelativeLayout
+        android:id="@+id/rl_loading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/rl_loading"
+        android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:background="@android:color/transparent">
+        android:focusableInTouchMode="true">
 
         <ProgressBar
             android:layout_width="wrap_content"

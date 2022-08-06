@@ -1,4 +1,4 @@
-package com.dhk.chatchit.viewmodel
+package com.dhk.chatchit.ui.lobby
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -11,39 +11,27 @@ import com.dhk.chatchit.model.RoomStatus
 import com.dhk.chatchit.repository.RoomRepo
 import com.dhk.chatchit.base.BaseResponse
 import com.dhk.chatchit.model.BaseResponseModel
-import com.dhk.chatchit.model.Message
 import com.dhk.chatchit.utils.Constants
 import com.google.gson.Gson
 import io.socket.client.Socket
 import kotlinx.coroutines.launch
 
 class LobbyViewModel(private val mSocket: Socket, private val roomRepo: RoomRepo, private val appPrefs: AppPrefs): ViewModel() {
-    private val _rooms = MutableLiveData<BaseResponseModel<List<RoomStatus>>>()
-    val rooms: LiveData<BaseResponseModel<List<RoomStatus>>> get() = _rooms
-
-    private val _message = MutableLiveData<BaseResponseModel<String>>()
-    val message: LiveData<BaseResponseModel<String>> get() = _message
-
-    private val _check = MutableLiveData<BaseResponseModel<String>>()
-    val check: LiveData<BaseResponseModel<String>> get() = _check
+    private val _action = MutableLiveData<LobbyAction>()
+    val action: LiveData<LobbyAction> get() = _action
 
     lateinit var room: String
 
     fun joinLobby(username: String) {
         mSocket.connect()
-
         mSocket.emit("newUser", username)
-
         mSocket.on("self") {
             val user = Gson().fromJson(it[0].toString(), User::class.java)
-
             appPrefs.putString(Constants.KEY_USER_DATA, Gson().toJson(user))
-
-            _message.postValue(BaseResponseModel("Welcome ${user.username}!", ""))
+            _action.postValue(LobbyAction.JoinedLobby(username))
         }
-
         mSocket.on("leftRoom") {
-            _message.postValue(BaseResponseModel(it[0].toString(), ""))
+            _action.postValue(LobbyAction.LeftRoom)
         }
     }
 
@@ -54,7 +42,9 @@ class LobbyViewModel(private val mSocket: Socket, private val roomRepo: RoomRepo
     fun getRooms() {
         viewModelScope.launch {
             when(val result = roomRepo.getRooms()) {
-                is BaseResponse.Success -> result.response.let { _rooms.postValue(it) }
+                is BaseResponse.Success -> result.response.let {
+                    if (it.error.isEmpty()) _action.postValue(LobbyAction.GetRooms(it.data))
+                }
                 is BaseResponse.Error -> Log.d("ERROR", result.exception.message.toString())
                 else -> Unit
             }
@@ -63,10 +53,12 @@ class LobbyViewModel(private val mSocket: Socket, private val roomRepo: RoomRepo
 
     fun newRoom(name: String) {
         room = name
-
         viewModelScope.launch {
             when(val result = roomRepo.newRoom(name)) {
-                is BaseResponse.Success -> result.response.let { _message.postValue(it) }
+                is BaseResponse.Success -> result.response.let {
+                    if (it.error.isEmpty()) _action.postValue(LobbyAction.NewRoomCreated)
+                    else _action.postValue(LobbyAction.ErrorRepeatedRoomName)
+                }
                 is BaseResponse.Error -> Log.d("ERROR", result.exception.message.toString())
                 else -> Unit
             }
@@ -75,11 +67,24 @@ class LobbyViewModel(private val mSocket: Socket, private val roomRepo: RoomRepo
 
     fun checkRoom(name: String) {
         viewModelScope.launch {
-            when(val result = roomRepo.checkRoom(name)) {
-                is BaseResponse.Success -> result.response.let { _check.postValue(it) }
+            when (val result = roomRepo.checkRoom(name)) {
+                is BaseResponse.Success -> result.response.let {
+                    if (it.error.isEmpty()) _action.postValue(LobbyAction.ValidRoomToJoin(name))
+                    else _action.postValue(LobbyAction.ErrorInvalidRoom)
+                }
                 is BaseResponse.Error -> Log.d("ERROR", result.exception.message.toString())
                 else -> Unit
             }
         }
     }
+}
+
+sealed class LobbyAction {
+    class JoinedLobby(val username: String) : LobbyAction()
+    class GetRooms(val rooms: List<RoomStatus>) : LobbyAction()
+    object NewRoomCreated : LobbyAction()
+    class ValidRoomToJoin(val roomName: String) : LobbyAction()
+    object ErrorRepeatedRoomName: LobbyAction()
+    object ErrorInvalidRoom: LobbyAction()
+    object LeftRoom : LobbyAction()
 }

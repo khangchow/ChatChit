@@ -1,4 +1,4 @@
-package com.chow.chinesedicev2.adapter.base
+package com.dhk.chatchit.adapter.base
 
 import android.view.View
 

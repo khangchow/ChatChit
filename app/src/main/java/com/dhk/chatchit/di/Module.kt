@@ -7,12 +7,11 @@ import com.dhk.chatchit.api.Api
 import com.dhk.chatchit.repository.RoomRepo
 import com.dhk.chatchit.utils.Constants
 import com.dhk.chatchit.viewmodel.ChatViewModel
-import com.dhk.chatchit.viewmodel.LobbyViewModel
+import com.dhk.chatchit.ui.lobby.LobbyViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 import io.socket.client.Socket
 import io.socket.client.IO
-import okhttp3.OkHttpClient
 import org.koin.androidx.viewmodel.dsl.viewModel
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

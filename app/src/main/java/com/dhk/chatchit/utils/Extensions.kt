@@ -1,6 +1,7 @@
 package com.dhk.chatchit.utils
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.CountDownTimer
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.dhk.chatchit.databinding.BaseAlertDialogBinding
 
@@ -118,4 +120,22 @@ fun TextView.showAnimationText(str: String) {
 
     visibility = View.VISIBLE
     startAnimation(animAppear)
+}
+
+fun Activity.showToast(content: String) {
+    Toast.makeText(this , content, Toast.LENGTH_SHORT).show()
+}
+
+fun Context.getStringById(id: Int) = resources.getString(id)
+
+fun View.gone() {
+    visibility = View.GONE
+}
+
+fun View.invisible() {
+    visibility = View.INVISIBLE
+}
+
+fun View.visible() {
+    visibility = View.VISIBLE
 }
