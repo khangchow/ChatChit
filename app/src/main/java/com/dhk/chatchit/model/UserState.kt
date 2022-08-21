@@ -5,12 +5,12 @@ import com.dhk.chatchit.utils.Constants
 data class UserState(
     val username: String,
     val state: String
-)
-
-fun UserState.convertToMessageNotification(): Message = Message(
-    id = "",
-    type = Constants.TYPE_NOTIFICATION,
-    username = username,
-    message = state,
-    room = "",
-)
+) {
+    fun convertToMessageNotification(): Message = Message(
+        id = "",
+        type = Constants.TYPE_NOTIFICATION,
+        username = username,
+        message = state,
+        room = "",
+    )
+}
