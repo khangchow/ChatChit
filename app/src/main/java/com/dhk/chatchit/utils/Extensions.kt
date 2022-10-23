@@ -60,49 +60,45 @@ fun Activity.showAlertDialog(
     cancelAble: Boolean = false,
     showEditText: Boolean = true,
 ) {
-    val baseAlertDialog = BaseAlertDialogBinding.inflate(LayoutInflater.from(this))
-    val alertDialog = AlertDialog.Builder(this).create()
-    alertDialog.setCustomTitle(null)
-    alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    alertDialog.setView(baseAlertDialog.root)
-
+    val binding = BaseAlertDialogBinding.inflate(LayoutInflater.from(this))
+    val alertDialog = AlertDialog.Builder(this).create().apply {
+        setCustomTitle(null)
+        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        setView(binding.root)
+    }
     if (alertTitle.isNullOrBlank()) {
-        baseAlertDialog.header.visibility = View.GONE
+        binding.header.visibility = View.GONE
     } else {
-        baseAlertDialog.header.text = alertTitle
+        binding.header.text = alertTitle
     }
-
     if (alertMessage.isNullOrBlank()) {
-        baseAlertDialog.messageContent.visibility = View.GONE
+        binding.messageContent.visibility = View.GONE
     } else {
-        baseAlertDialog.messageContent.text = alertMessage
+        binding.messageContent.text = alertMessage
     }
-
     if (!showEditText) {
-        baseAlertDialog.et.visibility = View.GONE
+        binding.et.visibility = View.GONE
     }
-
     if (positiveLabel.isNullOrBlank()) {
-        baseAlertDialog.positiveButton.visibility = View.GONE
+        binding.positiveButton.visibility = View.GONE
     } else {
-        baseAlertDialog.positiveButton.text = positiveLabel
-        baseAlertDialog.positiveButton.setOnClickListener {
-            if (baseAlertDialog.et.visibility == View.VISIBLE) {
-                if (!TextUtils.isEmpty(baseAlertDialog.et.text)) alertDialog.dismiss()
-                positiveClick(if (showEditText) baseAlertDialog.et.text.toString() else "")
+        binding.positiveButton.text = positiveLabel
+        binding.positiveButton.setOnClickListener {
+            if (binding.et.visibility == View.VISIBLE) {
+                if (!TextUtils.isEmpty(binding.et.text)) alertDialog.dismiss()
+                positiveClick(if (showEditText) binding.et.text.toString() else "")
             }else {
                 positiveClick("")
-
                 alertDialog.dismiss()
             }
         }
     }
 
     if (negativeLabel.isNullOrBlank()) {
-        baseAlertDialog.negativeButton.visibility = View.GONE
+        binding.negativeButton.visibility = View.GONE
     } else {
-        baseAlertDialog.negativeButton.text = negativeLabel
-        baseAlertDialog.negativeButton.setOnClickListener {
+        binding.negativeButton.text = negativeLabel
+        binding.negativeButton.setOnClickListener {
             alertDialog.dismiss()
             negativeClick()
         }
@@ -113,48 +109,33 @@ fun Activity.showAlertDialog(
 
 fun TextView.showAnimationText(str: String) {
     text = str
-
-    val animAppear = AlphaAnimation(0f, 1f)
-    animAppear.duration = 1000L
-    animAppear.setAnimationListener(object : Animation.AnimationListener {
-        override fun onAnimationRepeat(animation: Animation?) {
-        }
-
-        override fun onAnimationEnd(animation: Animation?) {
-            val timer = object : CountDownTimer(1000, 200) {
-                override fun onTick(millisUntilFinished: Long) {}
-
-                override fun onFinish() {
-                    val animDisappear = AlphaAnimation(1f, 0f)
-                    animDisappear.duration = 1000L
-                    animDisappear.setAnimationListener(object :
-                        Animation.AnimationListener {
-                        override fun onAnimationRepeat(animation: Animation?) {
-                        }
-
-                        override fun onAnimationEnd(animation: Animation?) {
-                            visibility = View.GONE
-                        }
-
-                        override fun onAnimationStart(animation: Animation?) {
-                        }
-
-                    })
-
-                    startAnimation(animDisappear)
-                }
-            }
-
-            timer.start()
-        }
-
-        override fun onAnimationStart(animation: Animation?) {
-        }
-
-    })
-
     visibility = View.VISIBLE
-    startAnimation(animAppear)
+    startAnimation(AlphaAnimation(0f, 1f).apply {
+        duration = 1000L
+        setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationRepeat(animation: Animation?) { }
+            override fun onAnimationEnd(animation: Animation?) {
+                val timer = object : CountDownTimer(1000, 200) {
+                    override fun onTick(millisUntilFinished: Long) {}
+                    override fun onFinish() {
+                        startAnimation(AlphaAnimation(1f, 0f).apply {
+                            duration = 1000L
+                            setAnimationListener(object :
+                                Animation.AnimationListener {
+                                override fun onAnimationRepeat(animation: Animation?) { }
+                                override fun onAnimationEnd(animation: Animation?) {
+                                    visibility = View.GONE
+                                }
+                                override fun onAnimationStart(animation: Animation?) { }
+                            })
+                        })
+                    }
+                }
+                timer.start()
+            }
+            override fun onAnimationStart(animation: Animation?) { }
+        })
+    })
 }
 
 fun Activity.showToast(content: String) {
