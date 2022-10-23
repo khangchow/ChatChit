@@ -57,7 +57,7 @@ fun Activity.showAlertDialog(
     negativeLabel: String?,
     positiveClick: (String) -> Unit = {},
     negativeClick: () -> Unit = {},
-    cancelAble: Boolean = false,
+    cancelAble: Boolean = true,
     showEditText: Boolean = true,
 ) {
     val binding = BaseAlertDialogBinding.inflate(LayoutInflater.from(this))
@@ -66,30 +66,25 @@ fun Activity.showAlertDialog(
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         setView(binding.root)
     }
-    if (alertTitle.isNullOrBlank()) {
-        binding.header.visibility = View.GONE
-    } else {
-        binding.header.text = alertTitle
-    }
-    if (alertMessage.isNullOrBlank()) {
-        binding.messageContent.visibility = View.GONE
-    } else {
-        binding.messageContent.text = alertMessage
-    }
-    if (!showEditText) {
-        binding.et.visibility = View.GONE
-    }
-    if (positiveLabel.isNullOrBlank()) {
-        binding.positiveButton.visibility = View.GONE
-    } else {
-        binding.positiveButton.text = positiveLabel
-        binding.positiveButton.setOnClickListener {
-            if (binding.et.visibility == View.VISIBLE) {
-                if (!TextUtils.isEmpty(binding.et.text)) alertDialog.dismiss()
-                positiveClick(if (showEditText) binding.et.text.toString() else "")
-            }else {
-                positiveClick("")
-                alertDialog.dismiss()
+    binding.apply {
+        if (alertTitle.isNullOrBlank()) header.hide() else header.text = alertTitle
+        if (alertMessage.isNullOrBlank()) messageContent.hide() else messageContent.text = alertMessage
+        if (!showEditText) et.hide()
+        if (positiveLabel.isNullOrBlank()) positiveButton.hide()
+        else {
+            positiveButton.run {
+                text = positiveLabel
+                setOnClickListener {
+                    if (showEditText) {
+                        this@apply.et.text.toString().let {
+                            positiveClick(it)
+                            if (it.isNotBlank()) alertDialog.dismiss()
+                        }
+                    }else {
+                        positiveClick("")
+                        alertDialog.dismiss()
+                    }
+                }
             }
         }
     }
