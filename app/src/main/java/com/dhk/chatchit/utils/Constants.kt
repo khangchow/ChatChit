@@ -1,12 +1,16 @@
 package com.dhk.chatchit.utils
 
 object Constants {
-    const val BASE_URL = "https://580c-2405-4803-d75f-4690-f81c-bb49-9677-8569.ap.ngrok.io"
+    const val BASE_URL = "https://1072-115-74-31-34.ap.ngrok.io"
 
     const val KEY_USERNAME = "username"
     const val KEY_USER_DATA = "user"
     const val KEY_ROOM = "room"
 
-    const val TYPE_MESSAGE = 1
-    const val TYPE_NOTIFICATION = 2
+    const val EVENT_JOINED_LOBBY = "EVENT_JOINED_LOBBY"
+    const val EVENT_LEFT_ROOM = "EVENT_LEFT_ROOM"
+    const val EVENT_UPDATE_USER_STATE = "EVENT_UPDATE_USER_STATE"
+    const val EVENT_NEW_MESSAGE = "EVENT_NEW_MESSAGE"
+    const val EVENT_SEND_MESSAGE = "EVENT_SEND_MESSAGE"
+    const val EVENT_SEND_SUCCESSFULLY = "EVENT_SEND_SUCCESSFULLY"
 }

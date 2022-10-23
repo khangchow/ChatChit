@@ -1,16 +1,47 @@
 package com.dhk.chatchit.model
 
-import com.dhk.chatchit.utils.Constants
+import com.dhk.chatchit.R
+import com.dhk.chatchit.utils.Resources
+import com.google.gson.annotations.SerializedName
 
-data class UserState(
+data class UserStateResponse(
+    val username: String?,
+    val state: State?
+)
+
+data class UserStateModel(
     val username: String,
-    val state: String
-) {
-    fun convertToMessageNotification(): Message = Message(
-        id = "",
-        type = Constants.TYPE_NOTIFICATION,
-        username = username,
-        message = state,
-        room = "",
-    )
+    val state: State
+)
+
+enum class State {
+    @SerializedName("state_joined")
+    STATE_JOINED,
+    @SerializedName("state_left")
+    STATE_LEFT,
+    @SerializedName("state_unknown")
+    STATE_UNKNOWN
 }
+
+fun State.toNotificationContent(username: String) = when (this) {
+    State.STATE_JOINED -> Resources.getString(R.string.user_joined, string = username)
+    State.STATE_LEFT -> Resources.getString(R.string.user_left, string = username)
+    State.STATE_UNKNOWN -> Resources.getString(R.string.common_error)
+}
+
+fun UserStateResponse?.toUserStateModel() = UserStateModel(
+    username = this?.username.orEmpty(),
+    state = this?.state ?: State.STATE_UNKNOWN
+)
+
+fun UserStateModel.toNotification(): MessageModel = MessageModel(
+    messageId = "",
+    userId = "",
+    type = MessageType.TYPE_NOTIFICATION,
+    username = username,
+    message = state.toNotificationContent(username),
+    room = "",
+    status = MessageStatus.COMPLETED,
+    isImage = false
+)
+

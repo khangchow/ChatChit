@@ -1,30 +1,26 @@
-package com.dhk.chatchit.adapter
+package com.dhk.chatchit.ui.lobby
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-
-import com.chow.chinesedicev2.adapter.base.BaseAdapters
-import com.dhk.chatchit.adapter.base.ItemOnClick
-
+import com.dhk.chatchit.base.BaseAdapters
+import com.dhk.chatchit.base.ItemOnClick
 import com.dhk.chatchit.databinding.ListRoomBinding
-import com.dhk.chatchit.model.RoomStatus
+import com.dhk.chatchit.model.RoomStatusModel
 
 
 class RoomAdapter(
-    dataList: List<RoomStatus> = listOf(),
-    private val itemOnClick: ItemOnClick<RoomStatus>? = null,
-) : BaseAdapters<RoomStatus, ListRoomBinding>(dataList) {
+    dataList: List<RoomStatusModel> = listOf(),
+    private val itemOnClick: ItemOnClick<RoomStatusModel>? = null,
+) : BaseAdapters<RoomStatusModel, ListRoomBinding>(dataList) {
 
-    @SuppressLint("SetTextI18n")
     override fun onBindViewHold(
         position: Int,
-        dataItem: RoomStatus,
+        dataItem: RoomStatusModel,
         binding: ListRoomBinding
     ) {
         binding.apply {
             tvName.text = dataItem.name
-            tvActive.text = dataItem.active.toString()
+            tvActive.text = dataItem.activeUser.toString()
             parent.setOnClickListener {
                 itemOnClick?.onClick(it, it.id, dataItem)
             }

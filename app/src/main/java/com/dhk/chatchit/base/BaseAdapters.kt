@@ -1,7 +1,5 @@
-package com.chow.chinesedicev2.adapter.base
+package com.dhk.chatchit.base
 
-import android.content.Context
-import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
@@ -26,14 +24,14 @@ abstract class BaseAdapters<T, B : ViewBinding>(
         return dataList.size
     }
 
-    fun setListObject(listItem: List<T>?) {
-        dataList = listItem ?: listOf()
+    fun setListObject(listItem: List<T>) {
+        dataList = listItem
         notifyDataSetChanged()
     }
 
-    fun newChatMessage(listItem: List<T>?) {
-        dataList = listItem ?: listOf()
-        notifyItemInserted(itemCount-1)
+    fun newChatMessage(listItem: List<T>) {
+        dataList = listItem
+        notifyItemInserted(itemCount - 1)
     }
     
     fun updateDataList(position: Int, item: T) {
@@ -43,7 +41,7 @@ abstract class BaseAdapters<T, B : ViewBinding>(
 //        notifyItemChanged(position)
     }
 
-    fun getItem(position: Int) = dataList[position]
+    private fun getItem(position: Int) = dataList[position]
 
     abstract fun onBindViewHold(position: Int, dataItem: T, binding: B)
 

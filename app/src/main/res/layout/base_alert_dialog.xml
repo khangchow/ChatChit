@@ -37,10 +37,24 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/message_content"
+        app:layout_constraintTop_toBottomOf="@id/iv_selected"
         android:id="@+id/et"
         android:background="@drawable/custom_et"
         android:padding="20dp"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et"
+        android:text="Error"
+        android:textSize="20sp"
+        android:id="@+id/message_error"
+        android:gravity="center"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/red"
+        android:visibility="gone"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:layout_width="0dp"
@@ -48,7 +62,7 @@
         android:background="@drawable/custom_pos_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et"
+        app:layout_constraintTop_toBottomOf="@id/message_error"
         android:id="@+id/positive_button"
         android:layout_marginTop="5dp"/>
 
@@ -61,4 +75,14 @@
         app:layout_constraintTop_toBottomOf="@id/positive_button"
         android:id="@+id/negative_button"
         android:layout_marginTop="5dp"/>
+
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:id="@+id/iv_selected"
+        app:layout_constraintTop_toBottomOf="@id/message_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/et"
+        android:visibility="gone"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

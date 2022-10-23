@@ -1,4 +1,4 @@
-package com.dhk.chatchit.adapter.base
+package com.dhk.chatchit.base
 
 import android.view.View
 

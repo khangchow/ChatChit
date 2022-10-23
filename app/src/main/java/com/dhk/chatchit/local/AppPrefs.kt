@@ -1,6 +1,5 @@
-package com.chow.chinesedicev2.local
+package com.dhk.chatchit.local
 
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_bg"
-    tools:context=".ui.MainActivity">
+    tools:context=".ui.chat_room.ChatActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
@@ -50,22 +50,33 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/bottom_view">
-
-        <com.chow.chinesedicev2.utils.EditTextV2
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="9"
-            android:hint="Type message here"
-            android:id="@+id/et_message"/>
+        android:id="@+id/bottom_view"
+        android:weightSum="10">
 
         <ImageButton
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_gallery"
+            android:background="@android:color/transparent"
+            android:id="@+id/btn_select_iamge"
+            android:scaleType="fitCenter"
+            android:layout_weight="1"/>
+
+        <com.chow.chinesedicev2.utils.EditTextV2
             android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:hint="Type message here"
+            android:id="@+id/et_message"
+            android:layout_width="0dp" />
+
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:src="@drawable/ic_send"
             android:background="@android:color/transparent"
-            android:padding="10dp"
-            android:id="@+id/btn_send"/>
+            android:id="@+id/btn_send"
+            android:scaleType="fitCenter"
+            android:layout_weight="1"/>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

@@ -20,4 +20,10 @@
     <string name="joined_lobby">Welcome %s!</string>
     <string name="left_room">You are now in lobby</string>
     <string name="empty_username_warning">Username can\'t be empty!</string>
+    <string name="load_image_error">Failed to load image</string>
+    <string name="message_status_sending">Sending…</string>
+    <string name="image_other">image_other</string>
+    <string name="message_status_failed">Failed to send!</string>
+    <string name="user_joined">%s joined</string>
+    <string name="user_left">%s left</string>
 </resources>

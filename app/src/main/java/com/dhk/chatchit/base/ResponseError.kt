@@ -1,4 +1,4 @@
-package com.dhk.easylove.base
+package com.dhk.chatchit.base
 
 import java.io.Serializable
 

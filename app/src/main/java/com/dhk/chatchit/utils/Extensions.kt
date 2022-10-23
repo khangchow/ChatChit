@@ -1,7 +1,6 @@
 package com.dhk.chatchit.utils
 
 import android.app.Activity
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.CountDownTimer
@@ -13,7 +12,43 @@ import android.view.animation.Animation
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.dhk.chatchit.R
 import com.dhk.chatchit.databinding.BaseAlertDialogBinding
+import com.dhk.chatchit.model.MessageStatus
+
+fun Int?.orZero() = this ?: 0
+
+fun Double?.orZero() = this ?: 0.0
+
+fun View.showWithCondition(isShown: Boolean) {
+    visibility = if (isShown) View.VISIBLE else View.GONE
+}
+
+fun View.show() {
+    visibility = View.VISIBLE
+}
+
+fun TextView.showWithMessageStatus(status: MessageStatus) {
+    when (status) {
+        MessageStatus.SENDING -> {
+            show()
+            text = Resources.getString(R.string.message_status_sending)
+        }
+        MessageStatus.COMPLETED -> hide()
+        MessageStatus.FAILED -> {
+            show()
+            text = Resources.getString(R.string.message_status_failed)
+        }
+    }
+}
+
+fun View.hide() {
+    visibility = View.GONE
+}
+
+fun View.invisible() {
+    visibility = View.INVISIBLE
+}
 
 fun Activity.showAlertDialog(
     alertTitle: String?,
@@ -124,18 +159,4 @@ fun TextView.showAnimationText(str: String) {
 
 fun Activity.showToast(content: String) {
     Toast.makeText(this , content, Toast.LENGTH_SHORT).show()
-}
-
-fun Context.getStringById(id: Int) = resources.getString(id)
-
-fun View.gone() {
-    visibility = View.GONE
-}
-
-fun View.invisible() {
-    visibility = View.INVISIBLE
-}
-
-fun View.visible() {
-    visibility = View.VISIBLE
 }

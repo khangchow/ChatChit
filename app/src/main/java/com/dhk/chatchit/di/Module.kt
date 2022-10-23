@@ -2,11 +2,12 @@ package com.dhk.chatchit.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.chow.chinesedicev2.local.AppPrefs
+import com.dhk.chatchit.local.AppPrefs
 import com.dhk.chatchit.api.Api
-import com.dhk.chatchit.repository.RoomRepo
+import com.dhk.chatchit.ui.chat_room.ChatRepo
+import com.dhk.chatchit.ui.lobby.LobbyRepo
 import com.dhk.chatchit.utils.Constants
-import com.dhk.chatchit.viewmodel.ChatViewModel
+import com.dhk.chatchit.ui.chat_room.ChatViewModel
 import com.dhk.chatchit.ui.lobby.LobbyViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
@@ -26,9 +27,10 @@ val module = module {
     single { provideRetrofit() }
     single { provideApiService(get()) }
 
-    single { RoomRepo(get()) }
+    single { LobbyRepo(get()) }
+    single { ChatRepo(get()) }
 
-    viewModel { ChatViewModel(get(), get()) }
+    viewModel { ChatViewModel(get(), get(), get()) }
     viewModel { LobbyViewModel(get(), get(), get()) }
 }
 

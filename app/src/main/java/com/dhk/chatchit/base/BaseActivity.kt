@@ -1,7 +1,6 @@
-package com.dhk.chatchit.ui.base
+package com.dhk.chatchit.base
 
 import android.graphics.Rect
-import android.os.Bundle
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 import androidx.appcompat.app.AppCompatActivity
@@ -11,10 +10,6 @@ import com.chow.chinesedicev2.utils.KeyboardUtils
 
 open class BaseActivity : AppCompatActivity() {
     var startClickTime: Long = 0
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         if (ev.action == MotionEvent.ACTION_DOWN) {

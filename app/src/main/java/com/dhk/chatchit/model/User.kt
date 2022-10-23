@@ -1,6 +1,16 @@
-package com.chow.chinesedicev2.model
+package com.dhk.chatchit.model
 
-data class User(
+data class UserResponse(
+    val id: String?,
+    val username: String?
+)
+
+data class UserModel(
     val id: String,
-    val username: String,
+    val username: String
+)
+
+fun UserResponse?.toUserModel() = UserModel(
+    id = this?.id.orEmpty(),
+    username = this?.username.orEmpty()
 )
