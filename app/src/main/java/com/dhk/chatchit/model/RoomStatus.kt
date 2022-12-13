@@ -1,6 +1,6 @@
 package com.dhk.chatchit.model
 
-import com.dhk.chatchit.utils.orZero
+import com.dhk.chatchit.extension.orZero
 
 data class RoomStatusResponse(
     val name: String?,

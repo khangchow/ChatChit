@@ -11,7 +11,7 @@ data class MessageResponse(
     val message: String?,
     val room: String?,
     val status: MessageStatus?,
-    val isImage: Boolean?
+    val isImage: Boolean?,
 )
 
 data class MessageModel(

@@ -1,6 +1,10 @@
-package com.dhk.chatchit.utils
+package com.dhk.chatchit.extension
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import com.dhk.chatchit.utils.FileUtils
+import com.dhk.chatchit.utils.Resources
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -12,3 +16,5 @@ fun Uri.toMultiBodyPart(): MultipartBody.Part? {
     val requestBody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
     return MultipartBody.Part.createFormData("image", file.name, requestBody)
 }
+
+fun Uri.toBitmap(): Bitmap = BitmapFactory.decodeStream(Resources.context.contentResolver.openInputStream(this))

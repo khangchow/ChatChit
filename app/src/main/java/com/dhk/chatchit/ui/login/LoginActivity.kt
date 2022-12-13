@@ -3,10 +3,10 @@ package com.dhk.chatchit.ui.login
 import android.os.Bundle
 import android.text.TextUtils
 import com.dhk.chatchit.R
-import com.dhk.chatchit.databinding.ActivityLoginBinding
 import com.dhk.chatchit.base.BaseActivity
+import com.dhk.chatchit.databinding.ActivityLoginBinding
+import com.dhk.chatchit.extension.showToast
 import com.dhk.chatchit.ui.lobby.LobbyActivity
-import com.dhk.chatchit.utils.showToast
 
 class LoginActivity : BaseActivity() {
     private lateinit var binding: ActivityLoginBinding

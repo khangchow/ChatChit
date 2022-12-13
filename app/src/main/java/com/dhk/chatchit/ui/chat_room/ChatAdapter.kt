@@ -2,19 +2,20 @@ package com.dhk.chatchit.ui.chat_room
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.dhk.chatchit.R
 import com.dhk.chatchit.databinding.ItemMessageReceiveBinding
 import com.dhk.chatchit.databinding.ItemMessageSendBinding
 import com.dhk.chatchit.databinding.ItemNotificationBinding
+import com.dhk.chatchit.extension.hide
+import com.dhk.chatchit.extension.show
+import com.dhk.chatchit.extension.showWithMessageStatus
 import com.dhk.chatchit.model.MessageModel
 import com.dhk.chatchit.model.MessageStatus
 import com.dhk.chatchit.model.toViewType
 import com.dhk.chatchit.utils.Resources
-import com.dhk.chatchit.utils.hide
-import com.dhk.chatchit.utils.show
-import com.dhk.chatchit.utils.showWithMessageStatus
 
 class ChatAdapter(
     private val messages: MutableList<MessageModel>
@@ -75,7 +76,11 @@ class MessageSendViewHolder(
             tvSending.showWithMessageStatus(data.status)
             if (data.isImage) {
                 flMessage.hide()
-                Glide.with(root.context).load(data.message) to ivImage
+                Glide.with(root.context).load(
+                    data.message.apply {
+                        if (data.status == MessageStatus.SENDING) toUri()
+                    }
+                ).into(ivImage)
                 ivImage.show()
             } else {
                 ivImage.hide()
