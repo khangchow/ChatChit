@@ -1,7 +1,7 @@
 package com.dhk.chatchit.model
 
 import com.dhk.chatchit.R
-import com.dhk.chatchit.utils.Resources
+import com.dhk.chatchit.other.Resources
 import com.google.gson.annotations.SerializedName
 
 data class UserStateResponse(

@@ -3,19 +3,14 @@ package com.dhk.chatchit.ui.lobby
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dhk.chatchit.R
-import com.dhk.chatchit.base.ItemOnClick
 import com.dhk.chatchit.databinding.ActivityLobbyBinding
-import com.dhk.chatchit.extension.invisible
-import com.dhk.chatchit.extension.showAlertDialog
-import com.dhk.chatchit.extension.showAnimationText
-import com.dhk.chatchit.extension.showToast
-import com.dhk.chatchit.model.RoomStatusModel
+import com.dhk.chatchit.extension.*
+import com.dhk.chatchit.other.Constants
+import com.dhk.chatchit.other.Resource
 import com.dhk.chatchit.ui.chat_room.ChatActivity
-import com.dhk.chatchit.utils.Constants
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LobbyActivity : AppCompatActivity() {
@@ -27,9 +22,13 @@ class LobbyActivity : AppCompatActivity() {
         binding = ActivityLobbyBinding.inflate(layoutInflater)
         setContentView(binding.root)
         lobbyViewModel.joinLobby(intent.getStringExtra(Constants.KEY_USERNAME).toString())
-        lobbyViewModel.getRooms()
         setUpView()
         setUpViewModel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lobbyViewModel.getRooms()
     }
 
     private fun setUpView() {
@@ -37,33 +36,15 @@ class LobbyActivity : AppCompatActivity() {
             swipeRefreshLayout.setOnRefreshListener {
                 lobbyViewModel.getRooms()
             }
-            rvRooms.adapter = RoomAdapter(
-                dataList = listOf(),
-                itemOnClick = object : ItemOnClick<RoomStatusModel> {
-                    override fun onClick(
-                        view: View?,
-                        idViewClick: Int?,
-                        dataClicked: RoomStatusModel?
-                    ) {
-                        when (idViewClick) {
-                            R.id.parent -> {
-                                lobbyViewModel.checkRoom(dataClicked!!.name)
-                            }
-                        }
-                    }
-                }
-            )
+            rvRooms.adapter = RoomAdapter(onCLickedRoom = lobbyViewModel::checkRoom)
             rvRooms.layoutManager = LinearLayoutManager(this@LobbyActivity)
             btnNew.setOnClickListener {
                 showAlertDialog(
                     alertTitle = getString(R.string.new_room),
                     positiveLabel = getString(R.string.create),
                     negativeLabel = getString(R.string.cancel),
-                    positiveClick = {
-                        if (it.isEmpty()) showToast(getString(R.string.err_empty_name))
-                        else lobbyViewModel.newRoom(it)
-                    },
-                    negativeClick = {},
+                    positiveClick = { lobbyViewModel.newRoom(it) },
+                    negativeClick = { },
                     alertMessage = ""
                 )
             }
@@ -72,41 +53,90 @@ class LobbyActivity : AppCompatActivity() {
 
     private fun setUpViewModel() {
         binding.apply {
-            lobbyViewModel.action.observe(this@LobbyActivity) { action ->
-                when (action) {
-                    is LobbyAction.GetRooms -> {
-                        (rvRooms.adapter as RoomAdapter).setListObject(action.rooms)
-                        swipeRefreshLayout.isRefreshing = false
+            lobbyViewModel.networkCallStatus.observe(this@LobbyActivity) { event ->
+                if (event.hasBeenHandled.not()) {
+                    event.getContentIfNotHandled()?.let { resource ->
+                        when (resource) {
+                            is Resource.Loading -> rlLoading.show()
+                            is Resource.Error -> {
+                                rlLoading.invisible()
+                                showToastError()
+                            }
+                            else -> Unit
+                        }
                     }
-                    is LobbyAction.NewRoomCreated -> {
-                        showToast(getString(R.string.created_room))
-                        startActivity(ChatActivity.getIntent(this@LobbyActivity, lobbyViewModel.room))
-                    }
-                    is LobbyAction.ValidRoomToJoin -> startActivity(ChatActivity.getIntent(this@LobbyActivity, action.roomName))
-                    is LobbyAction.ErrorInvalidRoom -> showAlertDialog(
-                        alertTitle = getString(R.string.warning),
-                        positiveLabel = getString(R.string.refresh),
-                        negativeLabel = "",
-                        positiveClick = {
-                            lobbyViewModel.getRooms()
-                        },
-                        negativeClick = {},
-                        alertMessage = getString(R.string.error_invalid_room),
-                        showEditText = false
-                    )
-                    is LobbyAction.ErrorRepeatedRoomName -> showToast(getString(R.string.error_repeated_room_name))
-                    is LobbyAction.JoinedLobby -> {
-                        tvMessage.showAnimationText(getString(R.string.joined_lobby, action.username))
+                }
+            }
+            lobbyViewModel.rooms.observe(this@LobbyActivity) { resource ->
+                when (resource) {
+                    is Resource.Success -> {
                         rlLoading.invisible()
-                    }
-                    is LobbyAction.LeftRoom -> {
-                        showToast(getString(R.string.left_room))
-                        lobbyViewModel.getRooms()
+                        resource.data?.let { rooms ->
+                            (rvRooms.adapter as RoomAdapter).setListObject(rooms)
+                        }
+                        swipeRefreshLayout.isRefreshing = false
                     }
                     else -> Unit
                 }
             }
+            lobbyViewModel.createRoomStatus.observe(this@LobbyActivity) { event ->
+                if (event.hasBeenHandled.not()) {
+                    event.getContentIfNotHandled()?.let { resource ->
+                        when (resource) {
+                            is Resource.Success -> {
+                                rlLoading.invisible()
+                                resource.data?.let { roomName ->
+                                    startActivity(ChatActivity.getIntent(this@LobbyActivity, roomName))
+                                }
+                            }
+                            is Resource.Error -> showToast(getString(R.string.error_invalid_room_name))
+                            else -> Unit
+                        }
+                    }
+                }
+            }
+            lobbyViewModel.checkRoomStatus.observe(this@LobbyActivity) { event ->
+                if (event.hasBeenHandled.not()) {
+                    event.getContentIfNotHandled()?.let { resource ->
+                        when (resource) {
+                            is Resource.Success -> {
+                                rlLoading.invisible()
+                                resource.data?.let { roomName ->
+                                    startActivity(ChatActivity.getIntent(this@LobbyActivity, roomName))
+                                }
+                            }
+                            is Resource.Error -> {
+                                rlLoading.invisible()
+                                showAlertDialog(
+                                    alertTitle = getString(R.string.warning),
+                                    positiveLabel = getString(R.string.refresh),
+                                    negativeLabel = "",
+                                    positiveClick = {
+                                        lobbyViewModel.getRooms()
+                                    },
+                                    negativeClick = {},
+                                    alertMessage = getString(R.string.error_invalid_room),
+                                    showEditText = false
+                                )
+                            }
+                            else -> {}
+                        }
+                    }
+                }
+            }
+            lobbyViewModel.joinLobbyStatus.observe(this@LobbyActivity) { event ->
+                if (event.hasBeenHandled.not()) {
+                    event.getContentIfNotHandled()?.let { username ->
+                        rlLoading.invisible()
+                        tvMessage.showAnimationText(getString(R.string.joined_lobby, username))
+                    }
+                }
+            }
         }
+    }
+
+    private fun showToastError() {
+        showToast(getString(R.string.common_error))
     }
 
     companion object {

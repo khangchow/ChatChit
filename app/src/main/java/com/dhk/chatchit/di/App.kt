@@ -1,7 +1,7 @@
 package com.dhk.chatchit.di
 
 import android.app.Application
-import com.dhk.chatchit.utils.Resources
+import com.dhk.chatchit.other.Resources
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext

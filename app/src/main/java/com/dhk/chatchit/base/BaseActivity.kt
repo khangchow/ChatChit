@@ -4,8 +4,8 @@ import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 import androidx.appcompat.app.AppCompatActivity
-import com.chow.chinesedicev2.utils.EditTextV2
-import com.chow.chinesedicev2.utils.KeyboardUtils
+import com.dhk.chatchit.other.EditTextV2
+import com.dhk.chatchit.other.KeyboardUtils
 
 
 open class BaseActivity : AppCompatActivity() {

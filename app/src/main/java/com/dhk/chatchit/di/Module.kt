@@ -6,9 +6,10 @@ import com.dhk.chatchit.local.AppPrefs
 import com.dhk.chatchit.api.Api
 import com.dhk.chatchit.ui.chat_room.ChatRepo
 import com.dhk.chatchit.ui.lobby.LobbyRepo
-import com.dhk.chatchit.utils.Constants
+import com.dhk.chatchit.other.Constants
 import com.dhk.chatchit.ui.chat_room.ChatViewModel
 import com.dhk.chatchit.ui.lobby.LobbyViewModel
+import com.dhk.chatchit.ui.login.LoginViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 import io.socket.client.Socket
@@ -32,6 +33,7 @@ val module = module {
 
     viewModel { ChatViewModel(get(), get(), get()) }
     viewModel { LobbyViewModel(get(), get(), get()) }
+    viewModel { LoginViewModel() }
 }
 
 fun provideSharePreferences(app: App): SharedPreferences {

@@ -11,7 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import com.dhk.chatchit.R
 import com.dhk.chatchit.databinding.BaseAlertDialogBinding
 import com.dhk.chatchit.model.MessageStatus
-import com.dhk.chatchit.utils.Resources
+import com.dhk.chatchit.other.Resources
 
 fun Int?.orZero() = this ?: 0
 

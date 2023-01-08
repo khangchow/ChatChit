@@ -1,18 +1,16 @@
 package com.dhk.chatchit.ui.chat_room
 
-import android.net.Uri
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.dhk.chatchit.extension.toMultiBodyPart
 import com.dhk.chatchit.local.AppPrefs
 import com.dhk.chatchit.model.*
-import com.dhk.chatchit.utils.Constants
-import com.dhk.chatchit.utils.Constants.EVENT_LEFT_ROOM
-import com.dhk.chatchit.utils.Constants.EVENT_NEW_MESSAGE
-import com.dhk.chatchit.utils.Constants.EVENT_SEND_MESSAGE
-import com.dhk.chatchit.utils.Constants.EVENT_SEND_SUCCESSFULLY
-import com.dhk.chatchit.utils.Constants.EVENT_UPDATE_USER_STATE
+import com.dhk.chatchit.other.Constants
+import com.dhk.chatchit.other.Constants.EVENT_LEFT_ROOM
+import com.dhk.chatchit.other.Constants.EVENT_NEW_MESSAGE
+import com.dhk.chatchit.other.Constants.EVENT_SEND_MESSAGE
+import com.dhk.chatchit.other.Constants.EVENT_SEND_SUCCESSFULLY
+import com.dhk.chatchit.other.Constants.EVENT_UPDATE_USER_STATE
+import com.dhk.chatchit.other.Event
 import com.google.gson.Gson
 import io.socket.client.Socket
 
@@ -21,45 +19,45 @@ class ChatViewModel(
     private val chatRepo: ChatRepo,
     private val appPrefs: AppPrefs
 ) : ViewModel() {
-    private val _action = MutableLiveData<RoomAction>()
-    val action: LiveData<RoomAction> get() = _action
     lateinit var user: UserModel
     lateinit var room: String
+    private val _newMessage = MutableLiveData<Event<MessageModel>>()
+    val newMessage = _newMessage
+    private val _sendMessageStatus = MutableLiveData<Event<MessageModel>>()
+    val sendMessageStatus = _sendMessageStatus
+    private val _sendTempMessageStatus = MutableLiveData<Event<MessageModel>>()
+    val sendTempMessageStatus = _sendTempMessageStatus
+    private val _leaveRoomStatus = MutableLiveData<Unit>()
+    val leaveRoomStatus = _leaveRoomStatus
 
     fun joinRoom(room: String) {
         this.room = room
         user = Gson().fromJson(appPrefs.getString(Constants.KEY_USER_DATA), UserModel::class.java)
         mSocket.emit(EVENT_UPDATE_USER_STATE, Gson().toJson(JoinRoomModel(user.username, room)))
         mSocket.on(EVENT_UPDATE_USER_STATE) {
-            val a = Gson().fromJson(
-                it[0].toString(),
-                UserStateResponse::class.java
-            ).toUserStateModel()
-            _action.postValue(
-                RoomAction.OnReceivedNewMessage(
-                    a.toNotification()
-                )
+            _newMessage.postValue(
+                Event(
+                Gson().fromJson(it[0].toString(), UserStateResponse::class.java).toUserStateModel().toNotification()
+            )
             )
         }
         mSocket.on(EVENT_NEW_MESSAGE) {
-            _action.postValue(
-                RoomAction.OnReceivedNewMessage(
-                    Gson().fromJson(
-                        it[0].toString(),
-                        MessageResponse::class.java
-                    ).toMessageModel()
-                )
+            _newMessage.postValue(
+                Event(
+                Gson().fromJson(it[0].toString(), MessageResponse::class.java).toMessageModel()
+            )
             )
         }
         mSocket.on(EVENT_SEND_SUCCESSFULLY) {
-            _action.postValue(
-                RoomAction.OnSentMessageSuccessfully(
-                    Gson().fromJson(
-                        it[0].toString(),
-                        MessageResponse::class.java
-                    ).toMessageModel()
+            _sendMessageStatus.postValue(
+                Event(
+                    Gson().fromJson(it[0].toString(), MessageResponse::class.java)
+                        .toMessageModel()
                 )
             )
+        }
+        mSocket.on(EVENT_LEFT_ROOM) {
+            _leaveRoomStatus.postValue(Unit)
         }
     }
 
@@ -75,7 +73,7 @@ class ChatViewModel(
             message = msg,
             room = room
         ).let {
-            _action.postValue(RoomAction.OnSendingMessage(it))
+            _sendTempMessageStatus.postValue(Event(it))
             mSocket.emit(
                 EVENT_SEND_MESSAGE,
                 Gson().toJson(it)
@@ -100,27 +98,19 @@ class ChatViewModel(
 //        }
 //    }
 
-    fun onImageSelected(uri: Uri) {
-        uri.toMultiBodyPart()?.let { image ->
-            _action.postValue(RoomAction.OnSendingMessage(
-                MessageModel(
-                    userId = user.id,
-                    messageId = System.currentTimeMillis().toString(),
-                    username = user.username,
-                    message = uri.toString(),
-                    room = room,
-                    isImage = true,
-                )
-            ))
-//            loadingImage(image)
-        } ?: _action.postValue(RoomAction.ShowToastLoadingImageError)
-    }
-}
-
-sealed class RoomAction {
-    class OnSendingMessage(val mes: MessageModel) : RoomAction()
-    class OnSentMessageSuccessfully(val mes: MessageModel) : RoomAction()
-    class OnReceivedNewMessage(val mes: MessageModel) : RoomAction()
-    class OnLoadedImageSuccessfully(val mes: MessageModel): RoomAction()
-    object ShowToastLoadingImageError : RoomAction()
+//    fun onImageSelected(uri: Uri) {
+//        uri.toMultiBodyPart()?.let { image ->
+//            _action.postValue(RoomAction.OnSendingMessage(
+//                MessageModel(
+//                    userId = user.id,
+//                    messageId = System.currentTimeMillis().toString(),
+//                    username = user.username,
+//                    message = uri.toString(),
+//                    room = room,
+//                    isImage = true,
+//                )
+//            ))
+////            loadingImage(image)
+//        } ?: _action.postValue(RoomAction.ShowToastLoadingImageError)
+//    }
 }

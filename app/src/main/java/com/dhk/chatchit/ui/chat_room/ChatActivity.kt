@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewTreeObserver
@@ -15,26 +16,41 @@ import com.dhk.chatchit.base.BaseActivity
 import com.dhk.chatchit.databinding.ActivityChatBinding
 import com.dhk.chatchit.extension.showToast
 import com.dhk.chatchit.model.MessageModel
-import com.dhk.chatchit.utils.Constants
+import com.dhk.chatchit.other.Constants
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChatActivity : BaseActivity() {
     private lateinit var binding: ActivityChatBinding
     private val chatViewModel: ChatViewModel by viewModel()
     private var chatList = mutableListOf<MessageModel>()
+    private val roomName by lazy { intent.getStringExtra(Constants.KEY_ROOM) ?: "" }
+    private var isKeyboardShown = false
+    private var alreadyLeftRoom = false
+    private val getImageFromGallery = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        result.data?.data?.let {
+//            chatViewModel.onImageSelected(it)
+        } ?: kotlin.run {
+            showToast(getString(R.string.load_image_error))
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChatBinding.inflate(layoutInflater)
-        val room = intent.getStringExtra(Constants.KEY_ROOM)
-        chatViewModel.joinRoom(room!!)
+        chatViewModel.joinRoom(roomName)
         setContentView(binding.root)
         setUpViewModel()
         setUpChatRecycleView()
+        setUpView()
+    }
+
+    private fun setUpView() {
         binding.apply {
-            tvRoomName.text = room
+            tvRoomName.text = roomName
             btnBack.setOnClickListener {
-                finish()
+                chatViewModel.leaveRoom()
             }
             btnSend.setOnClickListener {
                 etMessage.text.toString().let {
@@ -52,7 +68,6 @@ class ChatActivity : BaseActivity() {
                 getImageFromGallery.launch(Intent(Intent.ACTION_PICK).apply { type = "image/*" })
             }
             root.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-                private var alreadyShown = false
                 private val EstimatedKeyboardDP = 148
                 private val rect = Rect()
                 override fun onGlobalLayout() {
@@ -62,8 +77,8 @@ class ChatActivity : BaseActivity() {
                                 TypedValue.COMPLEX_UNIT_DIP, EstimatedKeyboardDP.toFloat(),
                                 root.resources.displayMetrics
                             ).toInt()
-                    if (isShown == alreadyShown) return
-                    alreadyShown = isShown
+                    if (isShown == isKeyboardShown) return
+                    isKeyboardShown = isShown
                     if (isShown) rvChat.apply {
                         scrollToPosition((adapter as ChatAdapter).itemCount - 1)
                     }
@@ -72,67 +87,58 @@ class ChatActivity : BaseActivity() {
         }
     }
 
-    private val getImageFromGallery = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        result.data?.data?.let {
-            chatViewModel.onImageSelected(it)
-        } ?: kotlin.run {
-            showToast(getString(R.string.load_image_error))
-        }
-    }
-
-
-    //
-    //        //set selected image to imageview
-    //        binding.imgAvatar.setImageBitmap(bitmap)
-
     private fun setUpChatRecycleView() {
         binding.apply {
-            rvChat.adapter = ChatAdapter(mutableListOf())
-            rvChat.layoutManager = LinearLayoutManager(this@ChatActivity)
-            rvChat.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    if (!recyclerView.canScrollVertically(1) && recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
-                        if (tvScrollBot.visibility == View.VISIBLE) tvScrollBot.visibility =
-                            View.INVISIBLE
+            rvChat.run {
+                adapter = ChatAdapter(mutableListOf())
+                layoutManager = LinearLayoutManager(this@ChatActivity)
+                addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                        super.onScrollStateChanged(recyclerView, newState)
+                        if (!recyclerView.canScrollVertically(1) && recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
+                            if (tvScrollBot.visibility == View.VISIBLE) tvScrollBot.visibility =
+                                View.INVISIBLE
+                        }
                     }
-                }
-            })
+                })
+            }
         }
     }
 
     private fun setUpViewModel() {
         binding.apply {
-            chatViewModel.action.observe(this@ChatActivity) {
-                when (it) {
-                    is RoomAction.OnReceivedNewMessage -> {
-                        chatList.add(it.mes)
-                        (rvChat.adapter as ChatAdapter).addNewMessage(it.mes)
+            chatViewModel.newMessage.observe(this@ChatActivity) { event ->
+                if (event.hasBeenHandled.not()) {
+                    event.getContentIfNotHandled()?.let { message ->
+                        chatList.add(message)
+                        (rvChat.adapter as ChatAdapter).addNewMessage(message)
                         if (rvChat.canScrollVertically(1)) {
                             tvScrollBot.visibility = View.VISIBLE
                         } else {
                             rvChat.smoothScrollToPosition(chatList.size - 1)
-
                         }
                     }
-                    is RoomAction.OnSendingMessage -> {
-                        (rvChat.adapter as ChatAdapter).addNewMessage(it.mes)
-                        chatList.add(it.mes)
+                }
+            }
+            chatViewModel.sendMessageStatus.observe(this@ChatActivity) { event ->
+                if (event.hasBeenHandled.not()) {
+                    event.getContentIfNotHandled()?.let { message ->
+                        (rvChat.adapter as ChatAdapter).updateMessageStatus(message)
+                    }
+                }
+            }
+            chatViewModel.sendTempMessageStatus.observe(this@ChatActivity) { event ->
+                if (event.hasBeenHandled.not()) {
+                    event.getContentIfNotHandled()?.let { message ->
+                        (rvChat.adapter as ChatAdapter).addNewMessage(message)
+                        chatList.add(message)
                         rvChat.smoothScrollToPosition(chatList.size - 1)
                     }
-                    is RoomAction.OnSentMessageSuccessfully -> {
-                        (rvChat.adapter as ChatAdapter).updateMessageStatus(it.mes)
-                    }
-                    is RoomAction.ShowToastLoadingImageError -> {
-                        showToast(getString(R.string.load_image_error))
-                    }
-                    is RoomAction.OnLoadedImageSuccessfully -> {
-
-                    }
-                    else -> {}
                 }
+            }
+            chatViewModel.leaveRoomStatus.observe(this@ChatActivity) {
+                alreadyLeftRoom = true
+                finish()
             }
         }
     }
@@ -145,8 +151,13 @@ class ChatActivity : BaseActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        if (isKeyboardShown.not()) chatViewModel.leaveRoom()
+        else super.onBackPressed()
+    }
+
     override fun onDestroy() {
-        chatViewModel.leaveRoom()
+        if (alreadyLeftRoom.not()) chatViewModel.leaveRoom()
         super.onDestroy()
     }
 }

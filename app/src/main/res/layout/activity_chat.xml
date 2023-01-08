@@ -8,100 +8,103 @@
     tools:context=".ui.chat_room.ChatActivity">
 
     <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/toolbar"
         android:minHeight="?android:attr/actionBarSize"
-        app:layout_constraintBottom_toTopOf="@id/rv_chat">
+        app:layout_constraintBottom_toTopOf="@id/rv_chat"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <ImageButton
+                android:id="@+id/btn_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_back"
                 android:background="@android:color/transparent"
+                android:src="@drawable/ic_back"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:id="@+id/btn_back"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/tv_room_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/public_chat_room"
-                android:textStyle="bold"
-                android:textSize="20sp"
-                app:layout_constraintStart_toEndOf="@id/btn_back"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginStart="10dp"
-                android:id="@+id/tv_room_name"/>
+                android:text="@string/public_chat_room"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_back"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.appcompat.widget.Toolbar>
 
     <LinearLayout
+        android:id="@+id/bottom_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/bottom_view"
         android:weightSum="10"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rv_chat">
 
         <ImageButton
+            android:id="@+id/btn_select_image"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_gallery"
+            android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:id="@+id/btn_select_image"
+            android:contentDescription="@string/gallery_icon"
             android:scaleType="fitCenter"
-            android:layout_weight="1"/>
+            android:src="@drawable/ic_gallery" />
 
-        <com.chow.chinesedicev2.utils.EditTextV2
+        <com.dhk.chatchit.other.EditTextV2
+            android:id="@+id/et_message"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="8"
-            android:hint="Type message here"
-            android:id="@+id/et_message"
-            android:layout_width="0dp" />
+            android:hint="@string/chat_hint"
+            android:maxHeight="100dp" />
 
         <ImageButton
+            android:id="@+id/btn_send"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_send"
+            android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:id="@+id/btn_send"
+            android:contentDescription="@string/send_message_icon"
             android:scaleType="fitCenter"
-            android:layout_weight="1"/>
+            android:src="@drawable/ic_send" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_chat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:id="@+id/rv_chat"
         app:layout_constraintBottom_toTopOf="@id/bottom_view"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <TextView
+        android:id="@+id/tv_scroll_bot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/newest_message"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:padding="10dp"
-        android:gravity="center"
-        app:layout_constraintBottom_toTopOf="@id/bottom_view"
-        android:id="@+id/tv_scroll_bot"
         android:background="@color/green"
-        android:visibility="invisible"/>
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/newest_message"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/bottom_view" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gl2"
@@ -109,7 +112,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="20dp"
-        app:layout_constraintGuide_percent="0.2"/>
+        app:layout_constraintGuide_percent="0.2" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gl1"
@@ -117,42 +120,42 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="20dp"
-        app:layout_constraintGuide_percent="0.1"/>
+        app:layout_constraintGuide_percent="0.1" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/black"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/rv_chat"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/black"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/bottom_view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rv_chat"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rv_chat" />
 
     <TextView
+        android:id="@+id/tv_message"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/custom_message"
+        android:gravity="center"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         android:text="Hello World!"
+        android:textColor="#4CFF00"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/gl2"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/gl1"
-        android:background="@drawable/custom_message"
-        android:textColor="#4CFF00"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:textSize="15sp"
-        android:id="@+id/tv_message"
-        android:visibility="gone"
-        android:layout_margin="10dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp" />
+        app:layout_constraintTop_toTopOf="@+id/gl1" />
 </androidx.constraintlayout.widget.ConstraintLayout>

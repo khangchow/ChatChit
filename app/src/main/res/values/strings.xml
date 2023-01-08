@@ -14,7 +14,7 @@
     <string name="warning">Warning</string>
     <string name="refresh">Refresh room list</string>
     <string name="common_error">Something\'s wrong! Please try again later!</string>
-    <string name="error_repeated_room_name">Repeated room name!</string>
+    <string name="error_invalid_room_name">Room name can not be EMPTY or REPEATED!</string>
     <string name="error_invalid_room">This room doesn\'t exist anymore!</string>
     <string name="created_room">Successfully created new room!</string>
     <string name="joined_lobby">Welcome %s!</string>
@@ -26,4 +26,10 @@
     <string name="message_status_failed">Failed to send!</string>
     <string name="user_joined">%s joined</string>
     <string name="user_left">%s left</string>
+    <string name="room_name_title">Room\'s name</string>
+    <string name="active_user_title">Active</string>
+    <string name="add_room_button">add room button</string>
+    <string name="chat_hint">Type message here</string>
+    <string name="gallery_icon">gallery icon</string>
+    <string name="send_message_icon">send message icon</string>
 </resources>

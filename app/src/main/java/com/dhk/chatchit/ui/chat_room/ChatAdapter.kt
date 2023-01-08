@@ -15,7 +15,7 @@ import com.dhk.chatchit.extension.showWithMessageStatus
 import com.dhk.chatchit.model.MessageModel
 import com.dhk.chatchit.model.MessageStatus
 import com.dhk.chatchit.model.toViewType
-import com.dhk.chatchit.utils.Resources
+import com.dhk.chatchit.other.Resources
 
 class ChatAdapter(
     private val messages: MutableList<MessageModel>

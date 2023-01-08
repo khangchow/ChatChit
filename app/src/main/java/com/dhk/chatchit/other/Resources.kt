@@ -1,4 +1,4 @@
-package com.dhk.chatchit.utils
+package com.dhk.chatchit.other
 
 import android.annotation.SuppressLint
 import android.content.Context

@@ -2,31 +2,35 @@ package com.dhk.chatchit.ui.lobby
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.dhk.chatchit.base.BaseAdapters
-import com.dhk.chatchit.base.ItemOnClick
+import androidx.recyclerview.widget.RecyclerView
 import com.dhk.chatchit.databinding.ListRoomBinding
 import com.dhk.chatchit.model.RoomStatusModel
 
-
 class RoomAdapter(
-    dataList: List<RoomStatusModel> = listOf(),
-    private val itemOnClick: ItemOnClick<RoomStatusModel>? = null,
-) : BaseAdapters<RoomStatusModel, ListRoomBinding>(dataList) {
+    private var dataList: List<RoomStatusModel> = listOf(),
+    private val onCLickedRoom: (String) -> Unit
+) : RecyclerView.Adapter<RoomAdapter.RoomViewHolder>() {
 
-    override fun onBindViewHold(
-        position: Int,
-        dataItem: RoomStatusModel,
-        binding: ListRoomBinding
-    ) {
-        binding.apply {
-            tvName.text = dataItem.name
-            tvActive.text = dataItem.activeUser.toString()
-            parent.setOnClickListener {
-                itemOnClick?.onClick(it, it.id, dataItem)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = RoomViewHolder(
+        ListRoomBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    )
+
+    override fun onBindViewHolder(holder: RoomViewHolder, position: Int) {
+        holder.binding.apply {
+            dataList[position].let { data ->
+                tvName.text = data.name
+                tvActive.text = data.activeUser.toString()
+                parent.setOnClickListener { data.name.run(onCLickedRoom) }
             }
         }
     }
 
-    override fun getViewBinding(viewGroup: ViewGroup) =
-        ListRoomBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
+    override fun getItemCount() = dataList.size
+
+    fun setListObject(rooms: List<RoomStatusModel>) {
+        dataList = rooms
+        notifyDataSetChanged()
+    }
+
+    class RoomViewHolder(val binding: ListRoomBinding) : RecyclerView.ViewHolder(binding.root)
 }
