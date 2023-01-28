@@ -25,8 +25,11 @@
         <entry key="..\:/Code/Mobile/ChatChit/app/src/main/res/layout/list_room.xml" value="0.3875" />
         <entry key="app/src/main/res/layout/activity_chat.xml" value="0.2833333333333333" />
         <entry key="app/src/main/res/layout/activity_lobby.xml" value="0.22604166666666667" />
-        <entry key="app/src/main/res/layout/activity_login.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="app/src/main/res/layout/base_alert_dialog.xml" value="0.22604166666666667" />
+        <entry key="app/src/main/res/layout/dialog_custom.xml" value="0.31979166666666664" />
+        <entry key="app/src/main/res/layout/dialog_inform.xml" value="0.3494791666666667" />
+        <entry key="app/src/main/res/layout/dialog_input.xml" value="0.31979166666666664" />
         <entry key="app/src/main/res/layout/item_message_receive.xml" value="0.22604166666666667" />
         <entry key="app/src/main/res/layout/item_message_send.xml" value="0.2833333333333333" />
       </map>

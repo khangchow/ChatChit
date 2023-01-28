@@ -1,7 +1,7 @@
 package com.dhk.chatchit.validator
 
 object Validator {
-    fun isUsernameValid(username: String) =  username.isNotBlank()
+    fun isUsernameValid(username: String?) =  username.isNullOrBlank().not()
 
-    fun isRoomNameValid(roomName: String) =  roomName.isNotBlank()
+    fun isRoomNameValid(roomName: String?) =  roomName.isNullOrBlank().not()
 }

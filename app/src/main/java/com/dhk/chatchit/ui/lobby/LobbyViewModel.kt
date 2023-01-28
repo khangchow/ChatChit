@@ -12,6 +12,7 @@ import com.dhk.chatchit.other.Constants
 import com.dhk.chatchit.other.Constants.EVENT_JOINED_LOBBY
 import com.dhk.chatchit.other.Event
 import com.dhk.chatchit.other.Resource
+import com.dhk.chatchit.validator.Validator
 import com.google.gson.Gson
 import io.socket.client.Socket
 import kotlinx.coroutines.launch
@@ -58,14 +59,14 @@ class LobbyViewModel(private val mSocket: Socket, private val lobbyRepo: LobbyRe
         }
     }
 
-    fun newRoom(name: String) {
-        if (name.isEmpty()) {
+    fun newRoom(name: String?) {
+        _networkCallStatus.postValue(Event(Resource.Loading))
+        if (!Validator.isRoomNameValid(name)) {
             _createRoomStatus.postValue(Event(Resource.Error()))
             return
         }
-        _networkCallStatus.postValue(Event(Resource.Loading))
         viewModelScope.launch {
-            lobbyRepo.newRoom(name).run {
+            lobbyRepo.newRoom(name!!).run {
                 if (isSuccessful) {
                     body()?.let {
                         if (it.error.isEmpty()) _createRoomStatus.postValue(Event(Resource.Success(name)))

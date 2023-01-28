@@ -3,19 +3,32 @@ package com.dhk.chatchit.ui.lobby
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dhk.chatchit.R
+import com.dhk.chatchit.base.BaseActivity
 import com.dhk.chatchit.databinding.ActivityLobbyBinding
+import com.dhk.chatchit.dialog.CustomDialog
 import com.dhk.chatchit.extension.*
 import com.dhk.chatchit.other.Constants
 import com.dhk.chatchit.other.Resource
 import com.dhk.chatchit.ui.chat_room.ChatActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class LobbyActivity : AppCompatActivity() {
+class LobbyActivity : BaseActivity() {
     private lateinit var binding: ActivityLobbyBinding
     private val lobbyViewModel: LobbyViewModel by viewModel()
+    private var customDialog: CustomDialog? = null
+
+    private fun getCreateRoomDialog(): CustomDialog {
+        if (customDialog == null) customDialog = CustomDialog.getInstance().enableInputMode(true)
+            .setTitle(getString(R.string.new_room))
+            .setPositiveButton(getString(R.string.create)) {
+                lobbyViewModel.newRoom(it)
+            }
+            .setNegativeButton(getString(R.string.cancel))
+            .setNegativeButtonDismissOnClicked(true)
+        return customDialog!!
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,14 +52,7 @@ class LobbyActivity : AppCompatActivity() {
             rvRooms.adapter = RoomAdapter(onCLickedRoom = lobbyViewModel::checkRoom)
             rvRooms.layoutManager = LinearLayoutManager(this@LobbyActivity)
             btnNew.setOnClickListener {
-                showAlertDialog(
-                    alertTitle = getString(R.string.new_room),
-                    positiveLabel = getString(R.string.create),
-                    negativeLabel = getString(R.string.cancel),
-                    positiveClick = { lobbyViewModel.newRoom(it) },
-                    negativeClick = { },
-                    alertMessage = ""
-                )
+                getCreateRoomDialog().show(supportFragmentManager, CustomDialog::class.java.simpleName)
             }
         }
     }
@@ -71,8 +77,8 @@ class LobbyActivity : AppCompatActivity() {
                 when (resource) {
                     is Resource.Success -> {
                         rlLoading.invisible()
-                        resource.data?.let { rooms ->
-                            (rvRooms.adapter as RoomAdapter).setListObject(rooms)
+                        resource.data?.let {
+                            (rvRooms.adapter as RoomAdapter).setListObject(it)
                         }
                         swipeRefreshLayout.isRefreshing = false
                     }
@@ -82,14 +88,18 @@ class LobbyActivity : AppCompatActivity() {
             lobbyViewModel.createRoomStatus.observe(this@LobbyActivity) { event ->
                 if (event.hasBeenHandled.not()) {
                     event.getContentIfNotHandled()?.let { resource ->
+                        rlLoading.invisible()
                         when (resource) {
                             is Resource.Success -> {
-                                rlLoading.invisible()
                                 resource.data?.let { roomName ->
+                                    customDialog?.dismiss()
+                                    customDialog = null
                                     startActivity(ChatActivity.getIntent(this@LobbyActivity, roomName))
                                 }
                             }
-                            is Resource.Error -> showToast(getString(R.string.error_invalid_room_name))
+                            is Resource.Error -> {
+                                showToast(getString(R.string.error_invalid_room_name_description))
+                            }
                             else -> Unit
                         }
                     }
@@ -107,17 +117,13 @@ class LobbyActivity : AppCompatActivity() {
                             }
                             is Resource.Error -> {
                                 rlLoading.invisible()
-                                showAlertDialog(
-                                    alertTitle = getString(R.string.warning),
-                                    positiveLabel = getString(R.string.refresh),
-                                    negativeLabel = "",
-                                    positiveClick = {
-                                        lobbyViewModel.getRooms()
-                                    },
-                                    negativeClick = {},
-                                    alertMessage = getString(R.string.error_invalid_room),
-                                    showEditText = false
-                                )
+                                CustomDialog.getInstance()
+                                    .setTitle(getString(R.string.warning_title))
+                                    .setDescription(getString(R.string.error_invalid_room))
+                                    .setPositiveButton(getString(R.string.refresh)) {
+                                        lobbyViewModel::getRooms
+                                    }
+                                    .setPositiveButtonDismissOnClicked(true)
                             }
                             else -> {}
                         }
