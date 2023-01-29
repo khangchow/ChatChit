@@ -141,10 +141,6 @@ class LobbyActivity : BaseActivity() {
         }
     }
 
-    private fun showToastError() {
-        showToast(getString(R.string.common_error))
-    }
-
     companion object {
         fun getIntent(context: Context, username: String): Intent {
             val intent = Intent(context, LobbyActivity::class.java)

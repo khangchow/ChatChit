@@ -21,6 +21,7 @@ class CustomDialog : BaseDialog() {
     private var isNumberInputType: Boolean? = null
     private var isNeedDismissOnPositiveClicked: Boolean? = null
     private var isNeedDismissOnNegativeClicked: Boolean? = null
+    private var isEnabledCancelable: Boolean = false
     private var inputHint: String? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> ViewBinding
@@ -29,7 +30,7 @@ class CustomDialog : BaseDialog() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        isCancelable = false
+        isCancelable = isEnabledCancelable
         binding.apply {
             tvTitle.apply {
                 title?.let {
@@ -127,6 +128,11 @@ class CustomDialog : BaseDialog() {
 
     fun setHint(hint: String): CustomDialog {
         this.inputHint = hint
+        return this
+    }
+
+    fun enableCancelable(isEnabled: Boolean): CustomDialog {
+        this.isEnabledCancelable = isEnabled
         return this
     }
 

@@ -5,6 +5,8 @@ import android.view.MotionEvent
 import android.view.ViewConfiguration
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import com.dhk.chatchit.R
+import com.dhk.chatchit.extension.showToast
 import com.dhk.chatchit.other.KeyboardUtils
 
 
@@ -38,5 +40,9 @@ open class BaseActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         isForeground = false
+    }
+
+    protected fun showToastError() {
+        showToast(getString(R.string.common_error))
     }
 }
