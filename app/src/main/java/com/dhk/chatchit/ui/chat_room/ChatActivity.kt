@@ -30,7 +30,7 @@ class ChatActivity : BaseActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         result.data?.data?.let {
-//            chatViewModel.onImageSelected(it)
+            chatViewModel.onImageSelected(it)
         } ?: kotlin.run {
             showToast(getString(R.string.load_image_error))
         }
@@ -139,6 +139,13 @@ class ChatActivity : BaseActivity() {
             chatViewModel.leaveRoomStatus.observe(this@ChatActivity) {
                 alreadyLeftRoom = true
                 finish()
+            }
+            chatViewModel.getImageFromDeviceErrorStatus.observe(this@ChatActivity) { event ->
+                if (event.hasBeenHandled.not()) {
+                    event.getContentIfNotHandled()?.let {
+                        showToast(getString(R.string.load_image_error))
+                    }
+                }
             }
         }
     }

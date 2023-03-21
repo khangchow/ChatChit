@@ -22,7 +22,8 @@ data class MessageModel(
     val message: String,
     val room: String,
     var status: MessageStatus = MessageStatus.SENDING,
-    val isImage: Boolean = false
+    val isImage: Boolean = false,
+    val tempUri: String = ""
 ) : Serializable
 
 fun MessageResponse?.toMessageModel() = MessageModel(
@@ -57,5 +58,7 @@ enum class MessageStatus {
     @SerializedName("completed")
     COMPLETED,
     @SerializedName("failed")
-    FAILED
+    FAILED,
+    @SerializedName("load_image_failed")
+    LOAD_IMAGE_FAILED,
 }

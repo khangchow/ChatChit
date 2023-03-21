@@ -40,8 +40,8 @@
             tools:text="a" />
     </FrameLayout>
 
-    <ImageView
-        android:id="@+id/iv_image"
+    <FrameLayout
+        android:id="@+id/fl_image"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:contentDescription="@string/image_other"
@@ -49,8 +49,21 @@
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/gl"
-        app:layout_constraintTop_toBottomOf="@id/fl_message"
-        tools:src="@mipmap/ic_launcher" />
+        app:layout_constraintTop_toBottomOf="@id/fl_message">
+
+        <ImageView
+            android:id="@+id/iv_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            tools:src="@mipmap/ic_launcher" />
+
+        <View
+            android:id="@+id/v_error_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white_50" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tv_sending"
@@ -59,7 +72,7 @@
         android:text="@string/message_status_sending"
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_image" />
+        app:layout_constraintTop_toBottomOf="@id/fl_image" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gl"

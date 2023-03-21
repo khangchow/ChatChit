@@ -1,7 +1,10 @@
 package com.dhk.chatchit.ui.chat_room
 
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.dhk.chatchit.extension.toMultiBodyPart
 import com.dhk.chatchit.local.AppPrefs
 import com.dhk.chatchit.model.*
 import com.dhk.chatchit.other.Constants
@@ -13,6 +16,8 @@ import com.dhk.chatchit.other.Constants.EVENT_UPDATE_USER_STATE
 import com.dhk.chatchit.other.Event
 import com.google.gson.Gson
 import io.socket.client.Socket
+import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 
 class ChatViewModel(
     private val mSocket: Socket,
@@ -29,6 +34,8 @@ class ChatViewModel(
     val sendTempMessageStatus = _sendTempMessageStatus
     private val _leaveRoomStatus = MutableLiveData<Unit>()
     val leaveRoomStatus = _leaveRoomStatus
+    private val _getImageFromDeviceErrorStatus = MutableLiveData<Event<Unit>>()
+    val getImageFromDeviceErrorStatus = _getImageFromDeviceErrorStatus
 
     fun joinRoom(room: String) {
         this.room = room
@@ -37,15 +44,16 @@ class ChatViewModel(
         mSocket.on(EVENT_UPDATE_USER_STATE) {
             _newMessage.postValue(
                 Event(
-                Gson().fromJson(it[0].toString(), UserStateResponse::class.java).toUserStateModel().toNotification()
-            )
+                    Gson().fromJson(it[0].toString(), UserStateResponse::class.java)
+                        .toUserStateModel().toNotification()
+                )
             )
         }
         mSocket.on(EVENT_NEW_MESSAGE) {
             _newMessage.postValue(
                 Event(
-                Gson().fromJson(it[0].toString(), MessageResponse::class.java).toMessageModel()
-            )
+                    Gson().fromJson(it[0].toString(), MessageResponse::class.java).toMessageModel()
+                )
             )
         }
         mSocket.on(EVENT_SEND_SUCCESSFULLY) {
@@ -81,36 +89,33 @@ class ChatViewModel(
         }
     }
 
-//    private fun loadingImage(image: MultipartBody.Part) {
-//        viewModelScope.launch {
-//            when (val result = chatRepo.loadingImage(image)) {
-//                is BaseResponse.Success -> result.response.let {
-//                    if (it.error.isEmpty()) _action.postValue(
-//                        RoomAction.OnLoadingImage(
-//
-//                        )
-//                    )
-//                    else Unit
-//                }
-//                is BaseResponse.Error -> Log.d("ERROR", result.exception.message.toString())
-//                else -> Unit
-//            }
-//        }
-//    }
+    private fun sendImage(image: MultipartBody.Part, messageId: String, uri: String) {
+        viewModelScope.launch {
+            chatRepo.sendImage(image).run {
+                if (isSuccessful) {
+                    body()?.let { response ->
+                        if (response.error.isBlank()) {
+                            _sendMessageStatus.postValue(Event(response.data.toImageModel().run {
+                                toMessageItem(user, room, url, messageId, tempUri = uri)
+                            }))
+                        }
+                    } ?: _sendMessageStatus.postValue(Event(ImageModel().copy(url = uri, status = MessageStatus.FAILED).run {
+                        toMessageItem(user, room, url, messageId)
+                    }))
+                } else {
+                    _sendMessageStatus.postValue(Event(ImageModel().copy(url = uri, status = MessageStatus.FAILED).run {
+                        toMessageItem(user, room, url, messageId)
+                    }))
+                }
+            }
+        }
+    }
 
-//    fun onImageSelected(uri: Uri) {
-//        uri.toMultiBodyPart()?.let { image ->
-//            _action.postValue(RoomAction.OnSendingMessage(
-//                MessageModel(
-//                    userId = user.id,
-//                    messageId = System.currentTimeMillis().toString(),
-//                    username = user.username,
-//                    message = uri.toString(),
-//                    room = room,
-//                    isImage = true,
-//                )
-//            ))
-////            loadingImage(image)
-//        } ?: _action.postValue(RoomAction.ShowToastLoadingImageError)
-//    }
+    fun onImageSelected(uri: Uri) {
+        uri.toMultiBodyPart()?.let { image ->
+            _sendTempMessageStatus.postValue(Event(ImageModel().copy(url = uri.toString(), status = MessageStatus.SENDING).run {
+                toMessageItem(user, room, url).also { sendImage(image, it.messageId, url) }
+            }))
+        } ?: _getImageFromDeviceErrorStatus.postValue(Event())
+    }
 }
