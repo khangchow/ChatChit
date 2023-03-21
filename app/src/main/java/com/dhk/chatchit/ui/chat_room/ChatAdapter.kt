@@ -155,11 +155,11 @@ class MessageReceiveViewHolder(
             if (data.isImage) {
                 flMessage.hide()
                 Glide.with(root.context).load(data.message) to ivImage
-                flMessage.show()
+                ivImage.show()
             } else {
-                flMessage.hide()
-                tvMessage.text = data.message
                 flMessage.show()
+                tvMessage.text = data.message
+                ivImage.hide()
             }
             when (data.status) {
                 MessageStatus.SENDING -> {
@@ -171,6 +171,7 @@ class MessageReceiveViewHolder(
                     tvSending.text = Resources.getString(R.string.message_status_failed)
                     tvSending.show()
                 }
+                else -> {}
             }
         }
     }
