@@ -154,7 +154,7 @@ class MessageReceiveViewHolder(
             tvSending.showWithMessageStatus(data.status)
             if (data.isImage) {
                 flMessage.hide()
-                Glide.with(root.context).load(data.message) to ivImage
+                Glide.with(root.context).load(Constants.BASE_URL + "/" + data.message).into(ivImage)
                 ivImage.show()
             } else {
                 flMessage.show()

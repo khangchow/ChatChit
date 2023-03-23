@@ -1,8 +1,8 @@
 package com.dhk.chatchit.ui.lobby
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dhk.chatchit.base.BaseViewModel
 import com.dhk.chatchit.local.AppPrefs
 import com.dhk.chatchit.model.RoomStatusModel
 import com.dhk.chatchit.model.UserResponse
@@ -17,7 +17,11 @@ import com.google.gson.Gson
 import io.socket.client.Socket
 import kotlinx.coroutines.launch
 
-class LobbyViewModel(private val mSocket: Socket, private val lobbyRepo: LobbyRepo, private val appPrefs: AppPrefs): ViewModel() {
+class LobbyViewModel(
+    private val mSocket: Socket,
+    private val lobbyRepo: LobbyRepo,
+    private val appPrefs: AppPrefs
+) : BaseViewModel(appPrefs, mSocket) {
     private val _joinLobbyStatus = MutableLiveData<Event<String>>()
     val joinLobbyStatus = _joinLobbyStatus
     private val _rooms = MutableLiveData<Resource<List<RoomStatusModel>>>()
@@ -28,6 +32,8 @@ class LobbyViewModel(private val mSocket: Socket, private val lobbyRepo: LobbyRe
     val checkRoomStatus = _checkRoomStatus
     private val _networkCallStatus = MutableLiveData<Event<Resource<Nothing>>>()
     val networkCallStatus = _networkCallStatus
+    private val _leaveRoomStatus = MutableLiveData<Unit>()
+    val leaveRoomStatus = _leaveRoomStatus
 
     fun joinLobby(username: String) {
         _networkCallStatus.postValue(Event(Resource.Loading))
@@ -38,10 +44,9 @@ class LobbyViewModel(private val mSocket: Socket, private val lobbyRepo: LobbyRe
             appPrefs.putString(Constants.KEY_USER_DATA, Gson().toJson(user))
             _joinLobbyStatus.postValue(Event(username))
         }
-    }
-
-    fun outLobby() {
-        mSocket.disconnect()
+        mSocket.on(Constants.EVENT_LEFT_ROOM) {
+            _leaveRoomStatus.postValue(Unit)
+        }
     }
 
     fun getRooms() {

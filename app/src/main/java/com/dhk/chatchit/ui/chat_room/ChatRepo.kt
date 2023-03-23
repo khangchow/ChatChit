@@ -4,5 +4,5 @@ import com.dhk.chatchit.api.Api
 import okhttp3.MultipartBody
 
 class ChatRepo(private val api: Api) {
-    suspend fun sendImage(image : MultipartBody.Part) = api.sendImage(image)
+    suspend fun sendImage(image : MultipartBody.Part, room: MultipartBody.Part) = api.sendImage(image, room)
 }

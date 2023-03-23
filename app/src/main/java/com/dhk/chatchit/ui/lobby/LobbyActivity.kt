@@ -138,6 +138,9 @@ class LobbyActivity : BaseActivity() {
                     }
                 }
             }
+            lobbyViewModel.leaveRoomStatus.observe(this@LobbyActivity) {
+                lobbyViewModel.getRooms()
+            }
         }
     }
 

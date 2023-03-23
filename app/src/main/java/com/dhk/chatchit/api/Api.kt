@@ -10,7 +10,7 @@ import retrofit2.http.*
 interface Api {
     @Multipart
     @POST("sendimage")
-    suspend fun sendImage(@Part image : MultipartBody.Part): Response<BaseResponseModel<ImageResponse>>
+    suspend fun sendImage(@Part image: MultipartBody.Part, @Part room: MultipartBody.Part): Response<BaseResponseModel<ImageResponse>>
 
     @GET("room")
     suspend fun getRooms(): Response<BaseResponseModel<List<RoomStatusResponse>>>

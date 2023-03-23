@@ -2,13 +2,11 @@ package com.dhk.chatchit.ui.chat_room
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dhk.chatchit.base.BaseViewModel
 import com.dhk.chatchit.extension.toMultiBodyPart
 import com.dhk.chatchit.local.AppPrefs
 import com.dhk.chatchit.model.*
-import com.dhk.chatchit.other.Constants
-import com.dhk.chatchit.other.Constants.EVENT_LEFT_ROOM
 import com.dhk.chatchit.other.Constants.EVENT_NEW_MESSAGE
 import com.dhk.chatchit.other.Constants.EVENT_SEND_MESSAGE
 import com.dhk.chatchit.other.Constants.EVENT_SEND_SUCCESSFULLY
@@ -22,9 +20,8 @@ import okhttp3.MultipartBody
 class ChatViewModel(
     private val mSocket: Socket,
     private val chatRepo: ChatRepo,
-    private val appPrefs: AppPrefs
-) : ViewModel() {
-    lateinit var user: UserModel
+    appPrefs: AppPrefs
+) : BaseViewModel(appPrefs, mSocket) {
     lateinit var room: String
     private val _newMessage = MutableLiveData<Event<MessageModel>>()
     val newMessage = _newMessage
@@ -32,14 +29,11 @@ class ChatViewModel(
     val sendMessageStatus = _sendMessageStatus
     private val _sendTempMessageStatus = MutableLiveData<Event<MessageModel>>()
     val sendTempMessageStatus = _sendTempMessageStatus
-    private val _leaveRoomStatus = MutableLiveData<Unit>()
-    val leaveRoomStatus = _leaveRoomStatus
     private val _getImageFromDeviceErrorStatus = MutableLiveData<Event<Unit>>()
     val getImageFromDeviceErrorStatus = _getImageFromDeviceErrorStatus
 
     fun joinRoom(room: String) {
         this.room = room
-        user = Gson().fromJson(appPrefs.getString(Constants.KEY_USER_DATA), UserModel::class.java)
         mSocket.emit(EVENT_UPDATE_USER_STATE, Gson().toJson(JoinRoomModel(user.username, room)))
         mSocket.on(EVENT_UPDATE_USER_STATE) {
             _newMessage.postValue(
@@ -64,13 +58,6 @@ class ChatViewModel(
                 )
             )
         }
-        mSocket.on(EVENT_LEFT_ROOM) {
-            _leaveRoomStatus.postValue(Unit)
-        }
-    }
-
-    fun leaveRoom() {
-        mSocket.emit(EVENT_LEFT_ROOM, user.username)
     }
 
     fun sendMessage(msg: String) {
@@ -91,12 +78,17 @@ class ChatViewModel(
 
     private fun sendImage(image: MultipartBody.Part, messageId: String, uri: String) {
         viewModelScope.launch {
-            chatRepo.sendImage(image).run {
+            chatRepo.sendImage(image, room.toMultiBodyPart()).run {
                 if (isSuccessful) {
                     body()?.let { response ->
                         if (response.error.isBlank()) {
                             _sendMessageStatus.postValue(Event(response.data.toImageModel().run {
-                                toMessageItem(user, room, url, messageId, tempUri = uri)
+                                toMessageItem(user, room, url, messageId, tempUri = uri).also {
+                                    mSocket.emit(
+                                        EVENT_SEND_MESSAGE,
+                                        Gson().toJson(it)
+                                    )
+                                }
                             }))
                         }
                     } ?: _sendMessageStatus.postValue(Event(ImageModel().copy(url = uri, status = MessageStatus.FAILED).run {

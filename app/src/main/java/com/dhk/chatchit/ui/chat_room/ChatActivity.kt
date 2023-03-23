@@ -25,7 +25,6 @@ class ChatActivity : BaseActivity() {
     private var chatList = mutableListOf<MessageModel>()
     private val roomName by lazy { intent.getStringExtra(Constants.KEY_ROOM) ?: "" }
     private var isKeyboardShown = false
-    private var alreadyLeftRoom = false
     private val getImageFromGallery = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -136,10 +135,6 @@ class ChatActivity : BaseActivity() {
                     }
                 }
             }
-            chatViewModel.leaveRoomStatus.observe(this@ChatActivity) {
-                alreadyLeftRoom = true
-                finish()
-            }
             chatViewModel.getImageFromDeviceErrorStatus.observe(this@ChatActivity) { event ->
                 if (event.hasBeenHandled.not()) {
                     event.getContentIfNotHandled()?.let {
@@ -158,13 +153,8 @@ class ChatActivity : BaseActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        if (isKeyboardShown.not()) chatViewModel.leaveRoom()
-        else super.onBackPressed()
-    }
-
     override fun onDestroy() {
-        if (alreadyLeftRoom.not()) chatViewModel.leaveRoom()
+        chatViewModel.leaveRoom()
         super.onDestroy()
     }
 }

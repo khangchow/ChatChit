@@ -17,4 +17,6 @@ fun Uri.toMultiBodyPart(): MultipartBody.Part? {
     return MultipartBody.Part.createFormData("image", file.name, requestBody)
 }
 
+fun String.toMultiBodyPart() = MultipartBody.Part.createFormData("room", this)
+
 fun Uri.toBitmap(): Bitmap = BitmapFactory.decodeStream(Resources.context.contentResolver.openInputStream(this))
