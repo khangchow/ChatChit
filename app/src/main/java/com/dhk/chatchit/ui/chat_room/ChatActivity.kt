@@ -50,6 +50,7 @@ class ChatActivity : BaseActivity() {
             tvRoomName.text = roomName
             btnBack.setOnClickListener {
                 chatViewModel.leaveRoom()
+                finish()
             }
             btnSend.setOnClickListener {
                 etMessage.text.toString().let {
