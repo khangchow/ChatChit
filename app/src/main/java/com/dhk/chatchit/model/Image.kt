@@ -4,17 +4,17 @@ data class ImageResponse(
     val url: String?,
 )
 
-data class ImageModel(
+data class Image(
     val url: String = "",
     val status: MessageStatus = MessageStatus.COMPLETED,
     val tempUri: String = ""
 )
 
-fun ImageResponse?.toImageModel() = ImageModel(
+fun ImageResponse?.toImage() = Image(
     url = this?.url.orEmpty(),
 )
 
-fun ImageModel.toMessageItem(userModel: UserModel, room: String, image: String, messageId: String? = null, tempUri: String? = null) = MessageModel(
+fun Image.toMessageItem(userModel: UserModel, room: String, image: String, messageId: String? = null, tempUri: String? = null) = Message(
     messageId = messageId ?: System.currentTimeMillis().toString(),
     userId = userModel.id,
     username = userModel.username,

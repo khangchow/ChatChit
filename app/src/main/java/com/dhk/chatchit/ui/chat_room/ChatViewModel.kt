@@ -23,11 +23,11 @@ class ChatViewModel(
     appPrefs: AppPrefs
 ) : BaseViewModel(appPrefs, mSocket) {
     lateinit var room: String
-    private val _newMessage = MutableLiveData<Event<MessageModel>>()
+    private val _newMessage = MutableLiveData<Event<Message>>()
     val newMessage = _newMessage
-    private val _sendMessageStatus = MutableLiveData<Event<MessageModel>>()
+    private val _sendMessageStatus = MutableLiveData<Event<Message>>()
     val sendMessageStatus = _sendMessageStatus
-    private val _sendTempMessageStatus = MutableLiveData<Event<MessageModel>>()
+    private val _sendTempMessageStatus = MutableLiveData<Event<Message>>()
     val sendTempMessageStatus = _sendTempMessageStatus
     private val _getImageFromDeviceErrorStatus = MutableLiveData<Event<Unit>>()
     val getImageFromDeviceErrorStatus = _getImageFromDeviceErrorStatus
@@ -39,14 +39,14 @@ class ChatViewModel(
             _newMessage.postValue(
                 Event(
                     Gson().fromJson(it[0].toString(), UserStateResponse::class.java)
-                        .toUserStateModel().toNotification()
+                        .toUserState().toNotification()
                 )
             )
         }
         mSocket.on(EVENT_NEW_MESSAGE) {
             _newMessage.postValue(
                 Event(
-                    Gson().fromJson(it[0].toString(), MessageResponse::class.java).toMessageModel()
+                    Gson().fromJson(it[0].toString(), MessageResponse::class.java).toMessage()
                 )
             )
         }
@@ -54,14 +54,14 @@ class ChatViewModel(
             _sendMessageStatus.postValue(
                 Event(
                     Gson().fromJson(it[0].toString(), MessageResponse::class.java)
-                        .toMessageModel()
+                        .toMessage()
                 )
             )
         }
     }
 
     fun sendMessage(msg: String) {
-        MessageModel(
+        Message(
             userId = user.id,
             messageId = System.currentTimeMillis().toString(),
             username = user.username,
@@ -82,7 +82,7 @@ class ChatViewModel(
                 if (isSuccessful) {
                     body()?.let { response ->
                         if (response.error.isBlank()) {
-                            _sendMessageStatus.postValue(Event(response.data.toImageModel().run {
+                            _sendMessageStatus.postValue(Event(response.data.toImage().run {
                                 toMessageItem(user, room, url, messageId, tempUri = uri).also {
                                     mSocket.emit(
                                         EVENT_SEND_MESSAGE,
@@ -91,11 +91,11 @@ class ChatViewModel(
                                 }
                             }))
                         }
-                    } ?: _sendMessageStatus.postValue(Event(ImageModel().copy(url = uri, status = MessageStatus.FAILED).run {
+                    } ?: _sendMessageStatus.postValue(Event(Image().copy(url = uri, status = MessageStatus.FAILED).run {
                         toMessageItem(user, room, url, messageId)
                     }))
                 } else {
-                    _sendMessageStatus.postValue(Event(ImageModel().copy(url = uri, status = MessageStatus.FAILED).run {
+                    _sendMessageStatus.postValue(Event(Image().copy(url = uri, status = MessageStatus.FAILED).run {
                         toMessageItem(user, room, url, messageId)
                     }))
                 }
@@ -105,7 +105,7 @@ class ChatViewModel(
 
     fun onImageSelected(uri: Uri) {
         uri.toMultiBodyPart()?.let { image ->
-            _sendTempMessageStatus.postValue(Event(ImageModel().copy(url = uri.toString(), status = MessageStatus.SENDING).run {
+            _sendTempMessageStatus.postValue(Event(Image().copy(url = uri.toString(), status = MessageStatus.SENDING).run {
                 toMessageItem(user, room, url).also { sendImage(image, it.messageId, url) }
             }))
         } ?: _getImageFromDeviceErrorStatus.postValue(Event())

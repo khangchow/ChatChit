@@ -18,14 +18,14 @@ import com.dhk.chatchit.extension.hide
 import com.dhk.chatchit.extension.invisible
 import com.dhk.chatchit.extension.show
 import com.dhk.chatchit.extension.showWithMessageStatus
-import com.dhk.chatchit.model.MessageModel
+import com.dhk.chatchit.model.Message
 import com.dhk.chatchit.model.MessageStatus
 import com.dhk.chatchit.model.toViewType
 import com.dhk.chatchit.other.Constants
 import com.dhk.chatchit.other.Resources
 
 class ChatAdapter(
-    private val messages: MutableList<MessageModel>
+    private val messages: MutableList<Message>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
         const val MESSAGE_SEND = 1
@@ -58,12 +58,12 @@ class ChatAdapter(
         return messages[position].type.toViewType()
     }
 
-    fun addNewMessage(newMessage: MessageModel) {
+    fun addNewMessage(newMessage: Message) {
         messages.add(newMessage)
         notifyItemChanged(messages.size - 1)
     }
 
-    fun updateMessageStatus(mes: MessageModel) {
+    fun updateMessageStatus(mes: Message) {
         messages.apply {
             indexOfFirst { it.messageId == mes.messageId }.let { index ->
                 set(index, mes)
@@ -77,7 +77,7 @@ class ChatAdapter(
 class MessageSendViewHolder(
     private val binding: ItemMessageSendBinding
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(data: MessageModel) {
+    fun bind(data: Message) {
         binding.apply {
             tvUsername.text = data.username
             tvSending.showWithMessageStatus(data.status)
@@ -148,7 +148,7 @@ class MessageSendViewHolder(
 class MessageReceiveViewHolder(
     private val binding: ItemMessageReceiveBinding
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(data: MessageModel) {
+    fun bind(data: Message) {
         binding.apply {
             tvUsername.text = data.username
             tvSending.showWithMessageStatus(data.status)
@@ -180,7 +180,7 @@ class MessageReceiveViewHolder(
 class NotificationViewHolder(
     private val binding: ItemNotificationBinding
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(data: MessageModel) {
+    fun bind(data: Message) {
         binding.tvNotification.text = data.message
     }
 }

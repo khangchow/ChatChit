@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewTreeObserver
@@ -15,14 +14,14 @@ import com.dhk.chatchit.R
 import com.dhk.chatchit.base.BaseActivity
 import com.dhk.chatchit.databinding.ActivityChatBinding
 import com.dhk.chatchit.extension.showToast
-import com.dhk.chatchit.model.MessageModel
+import com.dhk.chatchit.model.Message
 import com.dhk.chatchit.other.Constants
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChatActivity : BaseActivity() {
     private lateinit var binding: ActivityChatBinding
     private val chatViewModel: ChatViewModel by viewModel()
-    private var chatList = mutableListOf<MessageModel>()
+    private var chatList = mutableListOf<Message>()
     private val roomName by lazy { intent.getStringExtra(Constants.KEY_ROOM) ?: "" }
     private var isKeyboardShown = false
     private val getImageFromGallery = registerForActivityResult(

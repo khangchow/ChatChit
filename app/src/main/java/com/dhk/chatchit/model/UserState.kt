@@ -9,7 +9,7 @@ data class UserStateResponse(
     val state: State?
 )
 
-data class UserStateModel(
+data class UserState(
     val username: String,
     val state: State
 )
@@ -29,12 +29,12 @@ fun State.toNotificationContent(username: String) = when (this) {
     State.STATE_UNKNOWN -> Resources.getString(R.string.common_error)
 }
 
-fun UserStateResponse?.toUserStateModel() = UserStateModel(
+fun UserStateResponse?.toUserState() = UserState(
     username = this?.username.orEmpty(),
     state = this?.state ?: State.STATE_UNKNOWN
 )
 
-fun UserStateModel.toNotification(): MessageModel = MessageModel(
+fun UserState.toNotification(): Message = Message(
     messageId = "",
     userId = "",
     type = MessageType.TYPE_NOTIFICATION,

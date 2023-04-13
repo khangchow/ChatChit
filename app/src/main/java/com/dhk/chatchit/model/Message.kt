@@ -14,7 +14,7 @@ data class MessageResponse(
     val isImage: Boolean?,
 )
 
-data class MessageModel(
+data class Message(
     val messageId: String = "",
     val userId: String,
     var type: MessageType = MessageType.TYPE_MESSAGE_SEND,
@@ -26,7 +26,7 @@ data class MessageModel(
     val tempUri: String = ""
 ) : Serializable
 
-fun MessageResponse?.toMessageModel() = MessageModel(
+fun MessageResponse?.toMessage() = Message(
     messageId = this?.messageId.orEmpty(),
     userId = this?.userId.orEmpty(),
     type = this?.type ?: MessageType.TYPE_NOTIFICATION,
