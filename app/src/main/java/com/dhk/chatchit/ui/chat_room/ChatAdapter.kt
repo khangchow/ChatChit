@@ -25,7 +25,7 @@ import com.dhk.chatchit.other.Constants
 import com.dhk.chatchit.other.Resources
 
 class ChatAdapter(
-    private val messages: MutableList<Message>
+    var messages: MutableList<Message>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
         const val MESSAGE_SEND = 1

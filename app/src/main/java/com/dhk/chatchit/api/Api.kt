@@ -1,8 +1,6 @@
 package com.dhk.chatchit.api
 
-import com.dhk.chatchit.model.BaseResponseModel
-import com.dhk.chatchit.model.ImageResponse
-import com.dhk.chatchit.model.RoomStatusResponse
+import com.dhk.chatchit.model.*
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
@@ -10,10 +8,16 @@ import retrofit2.http.*
 interface Api {
     @Multipart
     @POST("sendimage")
-    suspend fun sendImage(@Part image: MultipartBody.Part, @Part room: MultipartBody.Part): Response<BaseResponseModel<ImageResponse>>
+    suspend fun sendImage(
+        @Part image: MultipartBody.Part,
+        @Part room: MultipartBody.Part
+    ): Response<BaseResponseModel<ImageResponse>>
 
     @GET("room")
     suspend fun getRooms(): Response<BaseResponseModel<List<RoomStatusResponse>>>
+
+    @GET
+    suspend fun getChatHistory(@Url url: String): Response<BaseResponseModel<List<MessageResponse>>>
 
     @FormUrlEncoded
     @POST("newroom")

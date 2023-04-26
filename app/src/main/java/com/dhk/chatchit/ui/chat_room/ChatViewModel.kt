@@ -12,8 +12,10 @@ import com.dhk.chatchit.other.Constants.EVENT_SEND_MESSAGE
 import com.dhk.chatchit.other.Constants.EVENT_SEND_SUCCESSFULLY
 import com.dhk.chatchit.other.Constants.EVENT_UPDATE_USER_STATE
 import com.dhk.chatchit.other.Event
+import com.dhk.chatchit.other.Resource
 import com.google.gson.Gson
 import io.socket.client.Socket
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 
@@ -27,13 +29,20 @@ class ChatViewModel(
     val newMessage = _newMessage
     private val _sendMessageStatus = MutableLiveData<Event<Message>>()
     val sendMessageStatus = _sendMessageStatus
+    private val _loadChatHistory = MutableLiveData<Event<Resource<List<Message>>>>()
+    val loadChatHistory = _loadChatHistory
+    private val _loadMoreChatHistory = MutableLiveData<Event<Resource<List<Message>?>>>()
+    val loadMoreChatHistory = _loadMoreChatHistory
     private val _sendTempMessageStatus = MutableLiveData<Event<Message>>()
     val sendTempMessageStatus = _sendTempMessageStatus
     private val _getImageFromDeviceErrorStatus = MutableLiveData<Event<Unit>>()
     val getImageFromDeviceErrorStatus = _getImageFromDeviceErrorStatus
+    private var nextUrl = ""
+    private var isLoadingMessages = false
 
     fun joinRoom(room: String) {
         this.room = room
+        this.nextUrl = "chat/history/${room}"
         mSocket.emit(EVENT_UPDATE_USER_STATE, Gson().toJson(JoinRoomModel(user.username, room)))
         mSocket.on(EVENT_UPDATE_USER_STATE) {
             _newMessage.postValue(
@@ -46,7 +55,8 @@ class ChatViewModel(
         mSocket.on(EVENT_NEW_MESSAGE) {
             _newMessage.postValue(
                 Event(
-                    Gson().fromJson(it[0].toString(), MessageResponse::class.java).toMessage()
+                    Gson().fromJson(it[0].toString(), MessageResponse::class.java)
+                        .toMessage(user.id)
                 )
             )
         }
@@ -54,10 +64,11 @@ class ChatViewModel(
             _sendMessageStatus.postValue(
                 Event(
                     Gson().fromJson(it[0].toString(), MessageResponse::class.java)
-                        .toMessage()
+                        .toMessage(user.id)
                 )
             )
         }
+        loadChatHistory(LoadingMode.LOAD)
     }
 
     fun sendMessage(msg: String) {
@@ -65,7 +76,7 @@ class ChatViewModel(
             userId = user.id,
             messageId = System.currentTimeMillis().toString(),
             username = user.username,
-            message = msg,
+            message = msg.trim(),
             room = room
         ).let {
             _sendTempMessageStatus.postValue(Event(it))
@@ -77,7 +88,7 @@ class ChatViewModel(
     }
 
     private fun sendImage(image: MultipartBody.Part, messageId: String, uri: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             chatRepo.sendImage(image, room.toMultiBodyPart()).run {
                 if (isSuccessful) {
                     body()?.let { response ->
@@ -91,13 +102,25 @@ class ChatViewModel(
                                 }
                             }))
                         }
-                    } ?: _sendMessageStatus.postValue(Event(Image().copy(url = uri, status = MessageStatus.FAILED).run {
-                        toMessageItem(user, room, url, messageId)
-                    }))
+                    } ?: _sendMessageStatus.postValue(
+                        Event(
+                            Image().copy(
+                                url = uri,
+                                status = MessageStatus.FAILED
+                            ).run {
+                                toMessageItem(user, room, url, messageId)
+                            })
+                    )
                 } else {
-                    _sendMessageStatus.postValue(Event(Image().copy(url = uri, status = MessageStatus.FAILED).run {
-                        toMessageItem(user, room, url, messageId)
-                    }))
+                    _sendMessageStatus.postValue(
+                        Event(
+                            Image().copy(
+                                url = uri,
+                                status = MessageStatus.FAILED
+                            ).run {
+                                toMessageItem(user, room, url, messageId)
+                            })
+                    )
                 }
             }
         }
@@ -105,9 +128,54 @@ class ChatViewModel(
 
     fun onImageSelected(uri: Uri) {
         uri.toMultiBodyPart()?.let { image ->
-            _sendTempMessageStatus.postValue(Event(Image().copy(url = uri.toString(), status = MessageStatus.SENDING).run {
-                toMessageItem(user, room, url).also { sendImage(image, it.messageId, url) }
-            }))
+            _sendTempMessageStatus.postValue(
+                Event(
+                    Image().copy(
+                        url = uri.toString(),
+                        status = MessageStatus.SENDING
+                    ).run {
+                        toMessageItem(user, room, url).also { sendImage(image, it.messageId, url) }
+                    })
+            )
         } ?: _getImageFromDeviceErrorStatus.postValue(Event())
+    }
+
+    fun loadChatHistory(loadingMode: LoadingMode) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (isLoadingMessages) return@launch
+            if (nextUrl.isBlank()) {
+                _loadMoreChatHistory.postValue(Event(Resource.Success()))
+                return@launch
+            }
+            isLoadingMessages = true
+            chatRepo.getChatHistory(nextUrl).run {
+                if (isSuccessful) {
+                    body()?.let {
+                        nextUrl = it.nextUrl ?: ""
+                        when (loadingMode) {
+                            LoadingMode.LOAD -> _loadChatHistory.postValue(
+                                Event(
+                                    Resource.Success(
+                                        it.data.toMessages(
+                                            user.id
+                                        )
+                                    )
+                                )
+                            )
+                            LoadingMode.LOAD_MORE -> _loadMoreChatHistory.postValue(
+                                Event(
+                                    Resource.Success(
+                                        it.data.toMessages(user.id)
+                                    )
+                                )
+                            )
+                        }
+                    }
+                } else {
+                    _networkCallStatus.postValue(Event(Resource.Error()))
+                }
+            }
+            isLoadingMessages = false
+        }
     }
 }

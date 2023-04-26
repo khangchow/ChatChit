@@ -70,8 +70,8 @@ class CustomDialog : BaseDialog() {
             }
             isInputModeEnabled?.let {
                 if (it) {
+                    tlInput.show()
                     etInput.apply {
-                        show()
                         if (isNumberInputType != null && isNumberInputType == true) {
                             inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_NORMAL
                         }

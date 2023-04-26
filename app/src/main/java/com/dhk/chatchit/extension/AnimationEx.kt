@@ -12,27 +12,29 @@ fun TextView.showAnimationText(str: String) {
     startAnimation(AlphaAnimation(0f, 1f).apply {
         duration = 1000L
         setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationRepeat(animation: Animation?) { }
+            override fun onAnimationRepeat(animation: Animation?) {}
             override fun onAnimationEnd(animation: Animation?) {
-                val timer = object : CountDownTimer(1000, 200) {
+                val timer = object : CountDownTimer(1000, 1000) {
                     override fun onTick(millisUntilFinished: Long) {}
                     override fun onFinish() {
                         startAnimation(AlphaAnimation(1f, 0f).apply {
                             duration = 1000L
                             setAnimationListener(object :
                                 Animation.AnimationListener {
-                                override fun onAnimationRepeat(animation: Animation?) { }
+                                override fun onAnimationRepeat(animation: Animation?) {}
                                 override fun onAnimationEnd(animation: Animation?) {
                                     visibility = View.GONE
                                 }
-                                override fun onAnimationStart(animation: Animation?) { }
+
+                                override fun onAnimationStart(animation: Animation?) {}
                             })
                         })
                     }
                 }
                 timer.start()
             }
-            override fun onAnimationStart(animation: Animation?) { }
+
+            override fun onAnimationStart(animation: Animation?) {}
         })
     })
 }

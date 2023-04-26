@@ -12,9 +12,10 @@ import com.dhk.chatchit.other.Constants
 import com.dhk.chatchit.other.Constants.EVENT_JOINED_LOBBY
 import com.dhk.chatchit.other.Event
 import com.dhk.chatchit.other.Resource
-import com.dhk.chatchit.validator.Validator
+import com.dhk.chatchit.other.validator.Validator
 import com.google.gson.Gson
 import io.socket.client.Socket
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LobbyViewModel(
@@ -30,8 +31,6 @@ class LobbyViewModel(
     val createRoomStatus = _createRoomStatus
     private val _checkRoomStatus = MutableLiveData<Event<Resource<String>>>()
     val checkRoomStatus = _checkRoomStatus
-    private val _networkCallStatus = MutableLiveData<Event<Resource<Nothing>>>()
-    val networkCallStatus = _networkCallStatus
     private val _leaveRoomStatus = MutableLiveData<Unit>()
     val leaveRoomStatus = _leaveRoomStatus
 
@@ -50,8 +49,8 @@ class LobbyViewModel(
     }
 
     fun getRooms() {
-        _networkCallStatus.postValue(Event(Resource.Loading))
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
+            _networkCallStatus.postValue(Event(Resource.Loading))
             lobbyRepo.getRooms().run {
                 if (isSuccessful) {
                     body()?.let {
@@ -65,16 +64,22 @@ class LobbyViewModel(
     }
 
     fun newRoom(name: String?) {
-        _networkCallStatus.postValue(Event(Resource.Loading))
-        if (!Validator.isRoomNameValid(name)) {
-            _createRoomStatus.postValue(Event(Resource.Error()))
-            return
-        }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
+            _networkCallStatus.postValue(Event(Resource.Loading))
+            if (!Validator.isRoomNameValid(name)) {
+                _createRoomStatus.postValue(Event(Resource.Error()))
+                return@launch
+            }
             lobbyRepo.newRoom(name!!).run {
                 if (isSuccessful) {
                     body()?.let {
-                        if (it.error.isEmpty()) _createRoomStatus.postValue(Event(Resource.Success(name)))
+                        if (it.error.isEmpty()) _createRoomStatus.postValue(
+                            Event(
+                                Resource.Success(
+                                    name
+                                )
+                            )
+                        )
                         else _createRoomStatus.postValue(Event(Resource.Error()))
                     } ?: kotlin.run {
                         networkCallStatus.postValue(Event(Resource.Error()))
@@ -85,12 +90,18 @@ class LobbyViewModel(
     }
 
     fun checkRoom(roomName: String) {
-        _networkCallStatus.postValue(Event(Resource.Loading))
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
+            _networkCallStatus.postValue(Event(Resource.Loading))
             lobbyRepo.checkRoom(roomName).run {
                 if (isSuccessful) {
                     body()?.let {
-                        if (it.error.isEmpty()) _checkRoomStatus.postValue(Event(Resource.Success(roomName)))
+                        if (it.error.isEmpty()) _checkRoomStatus.postValue(
+                            Event(
+                                Resource.Success(
+                                    roomName
+                                )
+                            )
+                        )
                         else _checkRoomStatus.postValue(Event(Resource.Error()))
                     } ?: kotlin.run {
                         networkCallStatus.postValue(Event(Resource.Error()))

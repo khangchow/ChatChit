@@ -121,9 +121,10 @@ class LobbyActivity : BaseActivity() {
                                     .setTitle(getString(R.string.warning_title))
                                     .setDescription(getString(R.string.error_invalid_room))
                                     .setPositiveButton(getString(R.string.refresh)) {
-                                        lobbyViewModel::getRooms
+                                        lobbyViewModel.getRooms()
                                     }
                                     .setPositiveButtonDismissOnClicked(true)
+                                    .show(supportFragmentManager, CustomDialog::class.java.simpleName)
                             }
                             else -> {}
                         }
