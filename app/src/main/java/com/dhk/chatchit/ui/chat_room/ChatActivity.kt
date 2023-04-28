@@ -8,10 +8,10 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dhk.chatchit.R
-import com.dhk.chatchit.base.BaseActivity
 import com.dhk.chatchit.databinding.ActivityChatBinding
 import com.dhk.chatchit.extension.hide
 import com.dhk.chatchit.extension.show
@@ -19,10 +19,11 @@ import com.dhk.chatchit.extension.showToast
 import com.dhk.chatchit.extension.toSizeInDp
 import com.dhk.chatchit.model.LoadingMode
 import com.dhk.chatchit.other.Constants
+import com.dhk.chatchit.other.PermissionUtils
 import com.dhk.chatchit.other.Resource
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ChatActivity : BaseActivity() {
+class ChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatBinding
     private val chatViewModel: ChatViewModel by viewModel()
     private val roomName by lazy { intent.getStringExtra(Constants.KEY_ROOM) ?: "" }
@@ -40,6 +41,14 @@ class ChatActivity : BaseActivity() {
             showToast(getString(R.string.load_image_error))
         }
     }
+    private val requestStoragePermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) {
+            if (it[PermissionUtils.READ_EXTERNAL_STORAGE] == true && it[PermissionUtils.WRITE_EXTERNAL_STORAGE] == true) {
+                getImageFromGallery.launch(Intent(Intent.ACTION_PICK).apply { type = "image/*" })
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,7 +82,11 @@ class ChatActivity : BaseActivity() {
                 tvScrollBot.visibility = View.INVISIBLE
             }
             btnSelectImage.setOnClickListener {
-                getImageFromGallery.launch(Intent(Intent.ACTION_PICK).apply { type = "image/*" })
+                if (PermissionUtils.isStoragePermissionsGranted(this@ChatActivity)) {
+                    getImageFromGallery.launch(Intent(Intent.ACTION_PICK).apply { type = "image/*" })
+                } else {
+                    requestStoragePermissionLauncher.launch(arrayOf(PermissionUtils.READ_EXTERNAL_STORAGE, PermissionUtils.WRITE_EXTERNAL_STORAGE))
+                }
             }
             root.viewTreeObserver.addOnGlobalLayoutListener(object :
                 ViewTreeObserver.OnGlobalLayoutListener {
@@ -251,5 +264,9 @@ class ChatActivity : BaseActivity() {
     override fun onDestroy() {
         chatViewModel.leaveRoom()
         super.onDestroy()
+    }
+
+    private fun showToastError() {
+        showToast(getString(R.string.common_error))
     }
 }

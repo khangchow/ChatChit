@@ -13,6 +13,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
+        android:textColor="@color/black"
         android:textSize="15sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -57,10 +58,10 @@
         android:id="@+id/tv_sending"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="@string/message_status_sending"
         android:textStyle="italic"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_image" />
+        app:layout_constraintTop_toBottomOf="@id/iv_image"
+        tools:text="@string/message_status_sending" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gl"

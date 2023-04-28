@@ -12,7 +12,6 @@ import com.dhk.chatchit.other.KeyboardUtils
 
 open class BaseActivity : AppCompatActivity() {
     var startClickTime: Long = 0
-    protected var isForeground: Boolean = false
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         when (ev.action) {
@@ -30,16 +29,6 @@ open class BaseActivity : AppCompatActivity() {
             }
         }
         return super.dispatchTouchEvent(ev)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        isForeground = true
-    }
-
-    override fun onStop() {
-        super.onStop()
-        isForeground = false
     }
 
     protected fun showToastError() {

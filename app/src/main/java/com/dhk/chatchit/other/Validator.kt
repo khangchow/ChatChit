@@ -1,4 +1,4 @@
-package com.dhk.chatchit.other.validator
+package com.dhk.chatchit.other
 
 object Validator {
     fun isUsernameValid(username: String?) =  username.isNullOrBlank().not()

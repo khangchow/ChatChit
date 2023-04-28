@@ -12,7 +12,7 @@ import com.dhk.chatchit.other.Constants
 import com.dhk.chatchit.other.Constants.EVENT_JOINED_LOBBY
 import com.dhk.chatchit.other.Event
 import com.dhk.chatchit.other.Resource
-import com.dhk.chatchit.other.validator.Validator
+import com.dhk.chatchit.other.Validator
 import com.google.gson.Gson
 import io.socket.client.Socket
 import kotlinx.coroutines.Dispatchers

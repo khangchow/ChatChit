@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.dhk.chatchit.other.Event
 import com.dhk.chatchit.other.Resource
-import com.dhk.chatchit.other.validator.Validator
+import com.dhk.chatchit.other.Validator
 
 class LoginViewModel : ViewModel() {
     private val _loginStatus = MutableLiveData<Event<Resource<String>>>()
