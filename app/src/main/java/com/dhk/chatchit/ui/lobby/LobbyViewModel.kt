@@ -51,14 +51,14 @@ class LobbyViewModel(
     fun getRooms() {
         viewModelScope.launch(Dispatchers.IO) {
             _networkCallStatus.postValue(Event(Resource.Loading))
-            lobbyRepo.getRooms().run {
-                if (isSuccessful) {
-                    body()?.let {
-                        if (it.error.isEmpty()) _rooms.postValue(Resource.Success(it.data.toRoomStatusModelList()))
-                    } ?: kotlin.run {
-                        _networkCallStatus.postValue(Event(Resource.Error()))
-                    }
-                } else _networkCallStatus.postValue(Event(Resource.Error()))
+            try {
+                with(lobbyRepo.getRooms()) {
+                    if (isSuccessful && body() != null) {
+                        _rooms.postValue(Resource.Success(body()!!.data.toRoomStatusModelList()))
+                    } else _networkCallStatus.postValue(Event(Resource.Error()))
+                }
+            } catch (e: Exception) {
+                _networkCallStatus.postValue(Event(Resource.Error()))
             }
         }
     }
@@ -70,21 +70,20 @@ class LobbyViewModel(
                 _createRoomStatus.postValue(Event(Resource.Error()))
                 return@launch
             }
-            lobbyRepo.newRoom(name!!).run {
-                if (isSuccessful) {
-                    body()?.let {
-                        if (it.error.isEmpty()) _createRoomStatus.postValue(
+            try {
+                with(lobbyRepo.newRoom(name!!)) {
+                    if (isSuccessful && body() != null) {
+                        _createRoomStatus.postValue(
                             Event(
                                 Resource.Success(
                                     name
                                 )
                             )
                         )
-                        else _createRoomStatus.postValue(Event(Resource.Error()))
-                    } ?: kotlin.run {
-                        networkCallStatus.postValue(Event(Resource.Error()))
-                    }
-                } else networkCallStatus.postValue(Event(Resource.Error()))
+                    } else _createRoomStatus.postValue(Event(Resource.Error()))
+                }
+            } catch (e: Exception) {
+                _networkCallStatus.postValue(Event(Resource.Error()))
             }
         }
     }
@@ -92,21 +91,20 @@ class LobbyViewModel(
     fun checkRoom(roomName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _networkCallStatus.postValue(Event(Resource.Loading))
-            lobbyRepo.checkRoom(roomName).run {
-                if (isSuccessful) {
-                    body()?.let {
-                        if (it.error.isEmpty()) _checkRoomStatus.postValue(
+            try {
+                with(lobbyRepo.checkRoom(roomName)) {
+                    if (isSuccessful && body() != null) {
+                        _checkRoomStatus.postValue(
                             Event(
                                 Resource.Success(
                                     roomName
                                 )
                             )
                         )
-                        else _checkRoomStatus.postValue(Event(Resource.Error()))
-                    } ?: kotlin.run {
-                        networkCallStatus.postValue(Event(Resource.Error()))
-                    }
-                } else networkCallStatus.postValue(Event(Resource.Error()))
+                    } else _checkRoomStatus.postValue(Event(Resource.Error()))
+                }
+            } catch (e: Exception) {
+                _networkCallStatus.postValue(Event(Resource.Error()))
             }
         }
     }

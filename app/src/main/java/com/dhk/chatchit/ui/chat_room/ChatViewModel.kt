@@ -89,39 +89,39 @@ class ChatViewModel(
 
     private fun sendImage(image: MultipartBody.Part, messageId: String, uri: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            chatRepo.sendImage(image, room.toMultiBodyPart()).run {
-                if (isSuccessful) {
-                    body()?.let { response ->
-                        if (response.error.isBlank()) {
-                            _sendMessageStatus.postValue(Event(response.data.toImage().run {
-                                toMessageItem(user, room, url, messageId, tempUri = uri).also {
-                                    mSocket.emit(
-                                        EVENT_SEND_MESSAGE,
-                                        Gson().toJson(it)
-                                    )
-                                }
-                            }))
-                        }
-                    } ?: _sendMessageStatus.postValue(
-                        Event(
-                            Image().copy(
-                                url = uri,
-                                status = MessageStatus.FAILED
-                            ).run {
-                                toMessageItem(user, room, url, messageId)
-                            })
-                    )
-                } else {
-                    _sendMessageStatus.postValue(
-                        Event(
-                            Image().copy(
-                                url = uri,
-                                status = MessageStatus.FAILED
-                            ).run {
-                                toMessageItem(user, room, url, messageId)
-                            })
-                    )
+            try {
+                with(chatRepo.sendImage(image, room.toMultiBodyPart())) {
+                    if (isSuccessful && body() != null) {
+                        _sendMessageStatus.postValue(Event(body()!!.data.toImage().run {
+                            toMessageItem(user, room, url, messageId, tempUri = uri).also {
+                                mSocket.emit(
+                                    EVENT_SEND_MESSAGE,
+                                    Gson().toJson(it)
+                                )
+                            }
+                        }))
+                    } else {
+                        _sendMessageStatus.postValue(
+                            Event(
+                                Image().copy(
+                                    url = uri,
+                                    status = MessageStatus.FAILED
+                                ).run {
+                                    toMessageItem(user, room, url, messageId)
+                                })
+                        )
+                    }
                 }
+            } catch (e: Exception) {
+                _sendMessageStatus.postValue(
+                    Event(
+                        Image().copy(
+                            url = uri,
+                            status = MessageStatus.FAILED
+                        ).run {
+                            toMessageItem(user, room, url, messageId)
+                        })
+                )
             }
         }
     }
@@ -148,15 +148,15 @@ class ChatViewModel(
                 return@launch
             }
             isLoadingMessages = true
-            chatRepo.getChatHistory(nextUrl).run {
-                if (isSuccessful) {
-                    body()?.let {
-                        nextUrl = it.nextUrl ?: ""
+            try {
+                with(chatRepo.getChatHistory(nextUrl)) {
+                    if (isSuccessful && body() != null) {
+                        nextUrl = body()!!.nextUrl ?: ""
                         when (loadingMode) {
                             LoadingMode.LOAD -> _loadChatHistory.postValue(
                                 Event(
                                     Resource.Success(
-                                        it.data.toMessages(
+                                        body()!!.data.toMessages(
                                             user.id
                                         )
                                     )
@@ -165,17 +165,20 @@ class ChatViewModel(
                             LoadingMode.LOAD_MORE -> _loadMoreChatHistory.postValue(
                                 Event(
                                     Resource.Success(
-                                        it.data.toMessages(user.id)
+                                        body()!!.data.toMessages(user.id)
                                     )
                                 )
                             )
                         }
+                    } else {
+                        _networkCallStatus.postValue(Event(Resource.Error()))
                     }
-                } else {
-                    _networkCallStatus.postValue(Event(Resource.Error()))
                 }
+                isLoadingMessages = false
+            } catch (e: Exception) {
+                _networkCallStatus.postValue(Event(Resource.Error()))
+                isLoadingMessages = false
             }
-            isLoadingMessages = false
         }
     }
 }
